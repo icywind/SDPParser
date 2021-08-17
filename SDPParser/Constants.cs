@@ -34,23 +34,23 @@ namespace io.agora.sdp
         public const string CRLF = "${CR}${LF}";
     }
 
-    public class RECORD_TYPE
+    public enum RECORD_TYPE
     {
-        public const char VERSION = 'v';
-        public const char ORIGIN  = 'o';
-        public const char SESSION_NAME = 's';
-        public const char INFORMATION = 'i';
-        public const char URI = 'u';
-        public const char EMAIL = 'e';
-        public const char PHONE = 'p';
-        public const char CONNECTION = 'c';
-        public const char BANDWIDTH = 'b';
-        public const char TIME  = 't';
-        public const char REPEAT = 'r';
-        public const char ZONE_ADJUSTMENTS = 'z';
-        public const char KEY = 'k';
-        public const char ATTRIBUTE = 'a';
-        public const char MEDIA = 'm';
+        VERSION = 'v',
+        ORIGIN = 'o',
+        SESSION_NAME = 's',
+        INFORMATION = 'i',
+        URI = 'u',
+        EMAIL = 'e',
+        PHONE = 'p',
+        CONNECTION = 'c',
+        BANDWIDTH = 'b',
+        TIME = 't',
+        REPEAT = 'r',
+        ZONE_ADJUSTMENTS = 'z',
+        KEY = 'k',
+        ATTRIBUTE = 'a',
+        MEDIA = 'm'
     }
 }
 

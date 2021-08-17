@@ -33,32 +33,53 @@ namespace io.agora.sdp
     {
         public string semantic { get; set; }
         public IList<string> identificationTag { get; set; }
+
+        public Group(string sem, IList<string> idTags) {
+            semantic = sem;
+            identificationTag = idTags;
+	    }
     }
 
     public class FingerPrint
     {
         public string hashFunction { get; set; }
         public string fingerprint { get; set; }
+
+        public FingerPrint(string hash, string fp)
+        {
+            hashFunction = hash;
+            fingerprint = fp;
+	    }
     }
 
-    public enum Setup // "active" | "passive" | "actpass" | "holdconn";
-    {
-        active,
-        passive,
-        actpass,
-        holdconn
-    }
+    //public enum Setup // "active" | "passive" | "actpass" | "holdconn";
+    //{
+    //    active,
+    //    passive,
+    //    actpass,
+    //    holdconn
+    //}
 
     public class Extension
     {
         public string name { get; set; }
         public string value { get; set; }
+        public Extension(string n, string v)
+        {
+            name = n; value = v;
+        }
     }
 
     public class Identity
     {
         public string assertionValue { get; set; }
         public IList<Extension> extensions { get; set; }
+
+        public Identity(string av, IList<Extension> ext)
+        {
+            assertionValue = av;
+            extensions = ext;
+	    }
     }
 
     public class Extmap
@@ -81,6 +102,22 @@ namespace io.agora.sdp
         public string relAddr { get; set; }
         public string relPort { get; set; }
         public IDictionary<string, string> extension { get; set; }
+
+        public Candidate(string found, string com, string tp, string pr, string ca,  string po, string ty, string ra = null, string rp = null,
+        IDictionary<string, string> ext = null)
+        {
+            foundation = found;
+            componentId = com;
+            transport = tp;
+            priority = pr;
+            connectionAddress = ca;
+            port = po;
+            type = ty;
+            relAddr = ra;
+            relPort = rp;
+            
+            extension = ext?? new Dictionary<string, string>();
+	    }
     }
 
     public class RemoteCandidate
@@ -88,6 +125,13 @@ namespace io.agora.sdp
         public string componentId { get; set; }
         public string connectionAddress { get; set; }
         public string port { get; set; }
+
+        public RemoteCandidate(string cid, string caddr, string po)
+        {
+            componentId = cid;
+            connectionAddress = caddr;
+            port = po;
+	    }
     }
 
     public class RTPMap
@@ -96,12 +140,25 @@ namespace io.agora.sdp
         public string encodingName;
         public string clockRate;
         public int encodingParameters;
+
+        public RTPMap(string cname, string crate, int enparams = 0)
+        {
+            encodingName = cname;
+            clockRate = crate;
+            encodingParameters = enparams;
+        }
+
     }
 
     public class Fmtp
     {
         // format: string;
-        public IDictionary<string, string> parameters;
+        public IDictionary<string, object> parameters;
+
+        public Fmtp(IDictionary<string, object> paras)
+        {
+            parameters = paras ?? new Dictionary<string, object>();
+	    }
     }
 
     public enum Direction
@@ -114,64 +171,71 @@ namespace io.agora.sdp
 
     public class SSRC
     {
-        long ssrcId;
-        IDictionary<string, string> attributes;
+        public long ssrcId;
+        public IDictionary<string, string> attributes;
+
+        public SSRC(long ssrcId, IDictionary<string, string> attributes)
+        {
+            this.ssrcId = ssrcId;
+            this.attributes = attributes?? new Dictionary<string, string>();
+	    }
     }
 
     public class SSRCGroup
     {
-        string semantic;
-        IList<long> ssrcIds;
+        public string semantic;
+        public IList<long> ssrcIds;
     }
 
-    public enum RTCPFeedback
+    public class RTCPFeedback
     {
-        ACKFeedback,
-        NACKFeedback,
-        TRRINTFeedback,
-        OtherFeedback
+        public string type { get; set; }
+        public RTCPFeedback(string type) {
+            this.type = type;
+	    }
     };
 
-
-    public class ACKFeedback
-    {
-        public string type { get; set; }
-        public string parameter { get; set; }// "rpsi" | "app" | string;
+    public class RTCPACKCommmonFeedback : RTCPFeedback
+    { 
+        public string parameter { get; set; }// "rpsi" | "app" | string;y
         public string additional { get; set; }
-
-        public ACKFeedback()
-        {
-            type = "ack";
-        }
+        public RTCPACKCommmonFeedback(string type) : base(type) { }
     }
 
-    public class NACKFeedback
+    public class ACKFeedback : RTCPACKCommmonFeedback
     {
-        public string type { get; set; }
-        public string parameter { get; set; }//"pli" | "sli" | "rpsi" | "app" | string
-        public string additional { get; set; }
-
-        public NACKFeedback()
-        {
-            type = "nack";
-        }
+        //public string type { get; set; }
+        //public string parameter { get; set; }// "rpsi" | "app" | string;y
+        //public string additional { get; set; }
+        public ACKFeedback(string type) : base(type) { }
     }
 
-    public class TRRINTFeedback
+    public class NACKFeedback : RTCPACKCommmonFeedback
     {
-        public string type { get; set; }
+        //public string type { get; set; }
+        //public string parameter { get; set; }//"pli" | "sli" | "rpsi" | "app" | string
+        //public string additional { get; set; }
+        public NACKFeedback(string type) : base(type) { }
+    }
+
+    public class TRRINTFeedback : RTCPFeedback
+    {
+        //public string type { get; set; }
         public string interval { get; set; }
-        public TRRINTFeedback()
+        public TRRINTFeedback(string type, string interval) : base(type)
         {
-            type = "trr-int";
+            this.type = type;
+            this.interval = interval;
         }
+
     }
 
-    public class OtherFeedback
+    public class OtherFeedback : RTCPACKCommmonFeedback
     {
-        public string type;
-        public string parameter { get; set; }//"app" | string
-        public string additional { get; set; }
+        //public string type;
+        //public string parameter { get; set; }//"app" | string
+        //public string additional { get; set; }
+        public OtherFeedback(string type) : base(type) { }
     }
 
     public class RTCP
@@ -184,7 +248,7 @@ namespace io.agora.sdp
 
     public class MSID
     {
-        public string id { get; set; }
+        public string id { get; set;  }
         public string appdata { get; set; }
     }
 
@@ -195,59 +259,70 @@ namespace io.agora.sdp
         public abstract string type { get; set; }
     }
 
-    public class RIDWidthParam
-    {
-        public string type { get; set; } = "max-width";
+    public class RIDGenericParam : RIDParam { 
+        public override string type { get; set; }
         public string val { get; set; }
     }
 
-    public class RIDHeightParam
-    {
-        public string type { get; set; } = "height-width";
-        public string val { get; set; }
-    }
 
-    public class RIDFpsParam
-    {
-        public string type { get; set; } = "max-fps";
-        public string val { get; set; }
-    }
+    //public class RIDWidthParam : RIDParam
+    //{
+    //    public override string type { get; } = "max-width";
+    //    public string val { get; set; }
+    //}
 
-    public class RIDFsParam
-    {
-        public string type { get; set; } = "max-fs";
-        public string val { get; set; }
-    }
+    //public class RIDHeightParam : RIDParam
+    //{
+    //    public override string type { get; } = "height-width";
+    //    public string val { get; set; }
+    //}
 
-    public class RIDBrParam
-    {
-        public string type { get; set; } = "max-br";
-        public string val { get; set; }
-    }
+    //public class RIDFpsParam : RIDParam
+    //{
+    //    public override string type { get; } = "max-fps";
+    //    public string val { get; set; }
+    //}
 
-    public class RIDPpsParam
-    {
-        public string type { get; set; } = "max-pps";
-        public string val { get; set; }
-    }
+    //public class RIDFsParam : RIDParam
+    //{
+    //    public override string type { get; } = "max-fs";
+    //    public string val { get; set; }
+    //}
 
-    public class RIDBppParam
-    {
-        public string type { get; set; } = "max-bpp";
-        public string val { get; set; }
-    }
+    //public class RIDBrParam : RIDParam
+    //{
+    //    public override string type { get; } = "max-br";
+    //    public string val { get; set; }
+    //}
 
-    public class RIDDependParam
+    //public class RIDPpsParam : RIDParam
+    //{
+    //    public override string type { get; } = "max-pps";
+    //    public string val { get; set; }
+    //}
+
+    //public class RIDBppParam : RIDParam
+    //{
+    //    public override string type { get; } = "max-bpp";
+    //    public string val { get; set; }
+    //}
+
+    //public class RIDOtherParam : RIDParam
+    //{
+    //    public override string type { get; } = "other";
+    //    public string val { get; set; }
+    //}
+
+    public class RIDDependParam : RIDParam
     {
-        public string type { get; set; } = "depend";
+        public override string type { get; set; } = "depend";
         public IList<string> rids { get; set; }
+
+        public RIDDependParam() {
+            rids = new List<string>();
+	    }
     }
 
-    public class RIDOtherParam
-    {
-        public string type { get; set; }
-        public string val { get; set; }
-    }
 
     public class RID
     {
@@ -255,6 +330,12 @@ namespace io.agora.sdp
         public string Direction { get; set; } // "send" | "recv";
         public IList<string> Payloads { get; set; }
         public IList<RIDParam> Params { get; set; }
+
+        public RID()
+        {
+            Payloads = new List<string>();
+            Params = new List<RIDParam>();
+	    }
     }
     #endregion
 
@@ -265,6 +346,12 @@ namespace io.agora.sdp
         public string semantic { get; set; }
         public bool? applyForAll { get; set; }
         public IList<string> identifierList { get; set; }
+
+        public MsidSemantic(string sem, IList<string> list)
+        {
+            semantic = sem;
+            identifierList = list;
+	    }
     }
 
     //    public class ExtmapEntry = Record<string, Extmap>;
@@ -275,11 +362,27 @@ namespace io.agora.sdp
         public Fmtp fmtp { get; set; }
         public IList<RTCPFeedback> rtcpFeedbacks { get; set; }
         public int payloadType { get; set; }
+
+        public PayloadAttribute(RTPMap rtpmap, int ptype, Fmtp fm = null) {
+            rtpMap = rtpmap;
+            fmtp = fm?? new Fmtp( null );
+            payloadType = ptype;
+
+            rtcpFeedbacks = new List<RTCPFeedback>();
+	    }
     }
 
     //  public class PayloadMap = Record<string, PayloadAttribute>;
-
-    public class SessionAttributes
+    public interface IAttributes {
+        public string iceUfrag { get; set; }
+        public string icePwd { get; set; }
+        public IList<string> iceOptions { get; set; }
+        public IList<FingerPrint> fingerprints { get; set; }
+        public IList<Extmap> extmaps { get; set; }
+        public string setup { get; set; }
+    }
+    
+    public class SessionAttributes : IAttributes
     {
         public IList<Group> groups { get; set; }
         public bool? iceLite { get; set; }
@@ -287,20 +390,32 @@ namespace io.agora.sdp
         public string icePwd { get; set; }
         public IList<string> iceOptions { get; set; }
         public IList<FingerPrint> fingerprints { get; set; }
-        public Setup setup { get; set; }
+        public string setup { get; set; }
         public string tlsId { get; set; }
         public IList<Identity> identities { get; set; }
         public IList<Extmap> extmaps { get; set; }
         public IList<Attribute> unrecognized { get; set; }
         public MsidSemantic msidSemantic { get; set; }
+
+        /// <summary>
+        ///   Constructor
+        /// </summary>
+        public SessionAttributes() {
+            groups = new List<Group>();
+            iceOptions = new List<string>();
+            fingerprints = new List<FingerPrint>();
+            identities = new List<Identity>();
+            extmaps = new List<Extmap>();
+            unrecognized = new List<Attribute>();
+	    }
     }
 
-    public class MediaAttributes
+    public class MediaAttributes : IAttributes
     {
         public string mid { get; set; }
         public string iceUfrag { get; set; }
         public string icePwd { get; set; }
-        public string iceOptions { get; set; }
+        public IList<string> iceOptions { get; set; }
         public IList<Candidate> candidates { get; set; }
         public IList<RemoteCandidate> remoteCandidatesList { get; set; }
         public bool? endOfCandidates { get; set; }
@@ -309,7 +424,7 @@ namespace io.agora.sdp
         //public string // fmtp: Fmtp[];
         public string ptime { get; set; }
         public string maxPtime { get; set; }
-        public Direction direction { get; set; }
+        public Direction? direction { get; set; }
         public IList<SSRC> ssrcs { get; set; }
         public IList<Extmap> extmaps { get; set; }
         //public string // rtcpFeedbacks: RTCPFeedback[];
@@ -324,9 +439,27 @@ namespace io.agora.sdp
         public string sctpPort { get; set; }
         public string maxMessageSize { get; set; }
         public IList<Attribute> unrecognized { get; set; }
-        public Setup setup { get; set; }
+        public string setup { get; set; }
         public IList<PayloadAttribute> payloads { get; set; }
         public IList<RTCPFeedback> rtcpFeedbackWildcards { get; set; }
         public IList<SSRCGroup> ssrcGroups { get; set; }
+
+        public MediaAttributes()
+        {
+            iceOptions = new List<string>();
+            candidates = new List<Candidate>();
+            remoteCandidatesList = new List<RemoteCandidate>();
+            fingerprints = new List<FingerPrint>();
+            ssrcs = new List<SSRC>();
+            extmaps = new List<Extmap>();
+            msids = new List<MSID>();
+            imageattr = new List<string>();
+            rids = new List<RID>();
+            unrecognized = new List<Attribute>();
+            payloads = new List<PayloadAttribute>();
+            rtcpFeedbackWildcards = new List<RTCPFeedback>();
+            ssrcGroups = new List<SSRCGroup>();
+	    }
+
     }
 }

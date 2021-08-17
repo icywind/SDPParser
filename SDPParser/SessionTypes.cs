@@ -110,6 +110,21 @@ namespace io.agora.sdp
         //public IList<RepeatTime> SDPRepeatTimes { get; set; }
     }
 
+    public class Media
+    {
+        public string mediaType { get; set; }
+        public string port { get; set; }
+        public IList<string> protos { get; set; } 
+        public IList<string> fmts { get; set; } 
+        public Media(string mt, string po, IList<string> pro, IList<string> fm)
+        {
+            mediaType = mt;
+            port = po;
+            protos = pro;
+            fmts = fm;
+	    }
+    }
+
     public class Origin
     {
         public string UserName { get; set; }
@@ -118,12 +133,28 @@ namespace io.agora.sdp
         public string Nettype { get; set; }
         public string AddrType { get; set; }
         public string UnicastAddress { get; set; }
+
+        public Origin(string name, ulong sid, ulong sver, string nettype, string addtype, string address)
+        {
+            UserName = name;
+            SessionId = sid;
+            SessionVersion = sver;
+            Nettype = nettype;
+            AddrType = addtype;
+            UnicastAddress = address;
+	    }
     }
 
     public class Bandwidth
     {
         public string Type { get; set; }
         public string Value { get; set; }
+
+        public Bandwidth(string type, string value)
+        {
+            Type = type;
+            Value = value;
+	    }
     }
 
     public class ConnectionData
@@ -195,17 +226,30 @@ namespace io.agora.sdp
 
     public class Attribute
     {
-        public bool? ignored {get; set;}
-  public string attField { get; set; }
-  public string attValue { get; set; }
-    public int _cur;
+        public bool? ignored { get; set; }
+        public string attField { get; set; }
+        public string attValue { get; set; }
+        public int _cur { get; set; }
+        public Attribute(string field, int cur, string value = "", bool? ignore = null)
+        {
+            attField = field;
+            attValue = value;
+            _cur = cur;
+	    }
     }
     // This is internal use
     public class Record
     {
-        public RECORD_TYPE type;
-        public string value;
-        public int cur;
-        public int line;
+        public RECORD_TYPE type { get; set; }
+        public string value { get; set; }
+        public int cur { get; set; }
+        public int line { get; set; }
+        public Record(RECORD_TYPE t, string v, int c, int l)
+        {
+            type = t;
+            value = v;
+            cur = c;
+            line = l;
+        }
     }
 }

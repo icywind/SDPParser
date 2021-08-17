@@ -1,5 +1,5 @@
 ﻿//
-// ParsingBase.cs
+// MyExtensions.cs
 //
 // Author:
 //       Rick Cheng <rick@agora.io>
@@ -26,10 +26,11 @@
 using System;
 namespace io.agora.sdp
 {
-    public class ParsingBase
+    public static class MyExtensions
     {
-        public ParsingBase()
+        public static string slice(this string str, int start, int end)
         {
+            return str.Substring(start, end - start);
         }
     }
 }
