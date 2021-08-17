@@ -116,33 +116,33 @@ namespace io.agora.sdp
         public string port { get; set; }
         public IList<string> protos { get; set; } 
         public IList<string> fmts { get; set; } 
-        public Media(string mt, string po, IList<string> pro, IList<string> fm)
-        {
-            mediaType = mt;
-            port = po;
-            protos = pro;
-            fmts = fm;
-	    }
+     //   public Media(string mt, string po, IList<string> pro, IList<string> fm)
+     //   {
+     //       mediaType = mt;
+     //       port = po;
+     //       protos = pro;
+     //       fmts = fm;
+	    //}
     }
 
     public class Origin
     {
         public string UserName { get; set; }
-        public ulong SessionId { get; set; }
-        public ulong SessionVersion { get; set; }
+        public string SessionId { get; set; }
+        public string SessionVersion { get; set; }
         public string Nettype { get; set; }
         public string AddrType { get; set; }
         public string UnicastAddress { get; set; }
 
-        public Origin(string name, ulong sid, ulong sver, string nettype, string addtype, string address)
-        {
-            UserName = name;
-            SessionId = sid;
-            SessionVersion = sver;
-            Nettype = nettype;
-            AddrType = addtype;
-            UnicastAddress = address;
-	    }
+     //   public Origin(string name, ulong sid, ulong sver, string nettype, string addtype, string address)
+     //   {
+     //       UserName = name;
+     //       SessionId = sid;
+     //       SessionVersion = sver;
+     //       Nettype = nettype;
+     //       AddrType = addtype;
+     //       UnicastAddress = address;
+	    //}
     }
 
     public class Bandwidth
@@ -150,11 +150,11 @@ namespace io.agora.sdp
         public string Type { get; set; }
         public string Value { get; set; }
 
-        public Bandwidth(string type, string value)
-        {
-            Type = type;
-            Value = value;
-	    }
+     //   public Bandwidth(string type, string value)
+     //   {
+     //       Type = type;
+     //       Value = value;
+	    //}
     }
 
     public class ConnectionData
@@ -179,25 +179,20 @@ namespace io.agora.sdp
 
     public class MediaDescription
     {
-        public string Media { get; set; }
-
-        public string Port { get; set; }
-
-        public string Proto { get; set; }
-
-        public IList<string> Fmts { get; set; }
-
-        public string Title { get; set; }
-
-        public ConnectionData ConnectionInfo { get; set; }
-
-        public IList<Bandwidth> Bandwiths { get; set; }
-
-        public EncriptionKey EncriptionKey { get; set; }
-
-        public IList<string> Attributes { get; set; }
+        public Media Media { get; set; }
+        public string Information { get; set; }
+        public IList<ConnectionData> Connections { get; set; }
+        public IList<Bandwidth> Bandwidths { get; set; }
+        public string Key { get; set; }
+        public MediaAttributes Attributes { get; set; }
     }
 
+    public class TimeZoneAdjustment
+    {
+        public string time { get; set; }
+        public string typedTime { get; set; }
+        public bool back { get; set; } 
+    }
 
     // SDPLib define
     public class SDPTimezoneInfo
@@ -209,13 +204,15 @@ namespace io.agora.sdp
     // SDPLib define
     public class TimingInfo
     {
-        public ulong StartTime { get; set; }
-        public ulong StopTime { get; set; }
+        public string StartTime { get; set; }
+        public string StopTime { get; set; }
     }
 
     public class TimeField
     {
         public TimingInfo Time { get; set; }
+        public IList<Repeat> Repeats { get; set; }
+        public IList<TimeZoneAdjustment> timeZoneAdjustments { get; set; }  
     }
 
     public class Repeat
@@ -230,6 +227,7 @@ namespace io.agora.sdp
         public string attField { get; set; }
         public string attValue { get; set; }
         public int _cur { get; set; }
+        public Attribute() { }
         public Attribute(string field, int cur, string value = "", bool? ignore = null)
         {
             attField = field;

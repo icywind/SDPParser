@@ -374,12 +374,12 @@ namespace io.agora.sdp
 
     //  public class PayloadMap = Record<string, PayloadAttribute>;
     public interface IAttributes {
-        public string iceUfrag { get; set; }
-        public string icePwd { get; set; }
-        public IList<string> iceOptions { get; set; }
-        public IList<FingerPrint> fingerprints { get; set; }
-        public IList<Extmap> extmaps { get; set; }
-        public string setup { get; set; }
+         string iceUfrag { get; set; }
+         string icePwd { get; set; }
+         IList<string> iceOptions { get; set; }
+         IList<FingerPrint> fingerprints { get; set; }
+         IList<Extmap> extmaps { get; set; }
+         string setup { get; set; }
     }
     
     public class SessionAttributes : IAttributes

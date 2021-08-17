@@ -55,12 +55,12 @@ namespace io.agora.sdp
         )
         {
             var peek = this.consumeOneOrMore(
-              attribute.attValue!,
+              attribute.attValue,
               attribute._cur,
               predict
             );
 
-            var result = attribute.attValue!.Substring(attribute._cur, peek - attribute._cur);
+            var result = attribute.attValue.Substring(attribute._cur, peek - attribute._cur);
 
             if (range != null)
             {
@@ -85,7 +85,7 @@ namespace io.agora.sdp
 
         protected void consumeAttributeSpace(Attribute attribute)
         {
-            if (attribute.attValue![attribute._cur] == Constants.SP)
+            if (attribute.attValue[attribute._cur] == Constants.SP)
             {
                 attribute._cur += 1;
             }
@@ -449,7 +449,7 @@ namespace io.agora.sdp
                 }
             }
 
-            this.attributes.msidSemantic = msidSemantic;
+            ((SessionAttributes) attributes).msidSemantic = msidSemantic;
         }
     }
 

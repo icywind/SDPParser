@@ -39,7 +39,7 @@ namespace io.agora.sdp
         {
         }
 
-        protected int ConsumeText(string str, int cur)
+        protected int consumeText(string str, int cur, object rest = null)
         {
             var peek = cur;
             while (peek < str.Length)
@@ -90,7 +90,7 @@ namespace io.agora.sdp
             return peek;
         }
 
-        protected int consumeUnicastAddress(string str, int cur, string type)
+        protected int consumeUnicastAddress(string str, int cur, object s=null)
         {
             //todo better address lexing
             return this.consumeTill(str, cur, Constants.SP);
@@ -628,7 +628,7 @@ namespace io.agora.sdp
               (c > '\u000E' && c < '\u00FF')
             );
         }
-        protected int consumeTypedTime(string recordValue, int cur)
+        protected int consumeTypedTime(string recordValue, int cur, object rest = null)
         {
             var peek = cur;
             peek = this.consumeOneOrMore(recordValue, peek, Char.IsDigit);
@@ -643,7 +643,7 @@ namespace io.agora.sdp
             }
         }
 
-        protected int consumeRepeatInterval(string recordValue, int cur)
+        protected int consumeRepeatInterval(string recordValue, int cur, object rest = null)
         {
             if (!IsPosDigit(recordValue[cur]))
             {

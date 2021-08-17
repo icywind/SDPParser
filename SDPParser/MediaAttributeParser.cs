@@ -361,7 +361,7 @@ namespace io.agora.sdp
             }
 
             var ssrc = ((List<SSRC>)_attributes.ssrcs).Find(
-              (ssrc) => ssrc.ssrcId.ToString() == ssrcId
+              (s) => s.ssrcId.ToString() == ssrcId
             );
             if (ssrc != null)
             {
@@ -398,7 +398,7 @@ namespace io.agora.sdp
             };
 
             var payload = ((List<PayloadAttribute>)_attributes.payloads).Find(
-              (payload) => payload.payloadType.ToString() == format
+              (p) => p.payloadType.ToString() == format
             );
 
             if (payload != null)
@@ -423,7 +423,7 @@ namespace io.agora.sdp
             var value = this.extract(attribute, this.consumeTill, ';');
             parameters[key] = value;
 
-            while (attribute.attValue![attribute._cur] == ';')
+            while (attribute.attValue[attribute._cur] == ';')
             {
                 key = this.extract(attribute, this.consumeTill, '=');
                 attribute._cur++; // skip "="
@@ -502,7 +502,7 @@ namespace io.agora.sdp
             else
             {
                 var payload = ((List<PayloadAttribute>)_attributes.payloads).Find(
-                  (payload) => payload.payloadType.ToString() == payloadType
+                  (p) => p.payloadType.ToString() == payloadType
                 );
 
                 if (payload != null)
@@ -590,7 +590,7 @@ namespace io.agora.sdp
         private void parseImageAttr(Attribute attribute)
         {
             //TODO pending parsing image attribute... 'cause it's stupid complex
-            _attributes.imageattr.Add(attribute.attValue!);
+            _attributes.imageattr.Add(attribute.attValue);
         }
 
         private void parseRid(Attribute attribute)
