@@ -26,6 +26,13 @@
 using System;
 namespace io.agora.sdp
 {
+
+    public delegate bool ConsumeTillDelegate(char c);
+    public delegate bool PredictDelegate(char c);
+    public delegate int ConsumeDelegate(string value, int cur, object rest);
+
+
+    // consume: (value: string, cur: number, ...rest: any) => number,
     public class ParsingConsumerBase
     {
         public ParsingConsumerBase()
@@ -55,9 +62,6 @@ namespace io.agora.sdp
             }
             return peek;
         }
-
-        public delegate bool ConsumeTillDelegate(char c);
-        public delegate bool PredictDelegate(char c);
 
         protected int consumeTill(string value, int cur,
             // till: ((char: string) => boolean) | string | undefined
@@ -332,7 +336,7 @@ namespace io.agora.sdp
             return peek;
         }
 
-        public static bool isNonWSChar(char c)
+        public static bool IsNonWSChar(char c)
         {
             return (
           c == '\u0021' ||
@@ -347,10 +351,10 @@ namespace io.agora.sdp
 
         protected int consumeExtnAddr(string str, int cur)
         {
-            return this.consumeOneOrMore(str, cur, isNonWSChar);
+            return this.consumeOneOrMore(str, cur, IsNonWSChar);
         }
 
-        protected int consumeMulticastAddress( string str, int cur, string type )
+        protected int consumeMulticastAddress(string str, int cur, string type)
         {
             switch (type)
             {
@@ -439,7 +443,7 @@ namespace io.agora.sdp
         }
 
 
-        protected int consumeInteger(string str, int peek)
+        protected int consumeInteger(string str, int peek, object rest = null)
         {
             if (!IsPosDigit(str[peek]))
             {
@@ -511,12 +515,12 @@ namespace io.agora.sdp
             );
         }
 
-        protected int consumeToken(string str, int cur)
+        protected int consumeToken(string str, int cur, object o)
         {
             return this.consumeOneOrMore(str, cur, IsTokenChar);
         }
 
-        protected int consumeTime(string recordValue, int cur)
+        protected int consumeTime(string recordValue, int cur, object o)
         {
             var peek = cur;
 
@@ -550,7 +554,7 @@ namespace io.agora.sdp
             return peek;
         }
 
-        protected int consumeAddress(string value, int cur)
+        protected int consumeAddress(string value, int cur, object o)
         {
             //todo better address lexer
             return this.consumeTill(value, cur, Constants.SP);
@@ -584,11 +588,46 @@ namespace io.agora.sdp
 
         public static bool IsFixedLenTimeUnit(char c)
         {
-            return ( c == '\u0064' || c == '\u0068' ||
+            return (c == '\u0064' || c == '\u0068' ||
                      c == '\u006D' || c == '\u0073'
                    );
         }
 
+        public static bool IsICEChar(char c)
+        {
+            return Char.IsLetter(c) || Char.IsDigit(c) || c == '+' || c == '/';
+        }
+
+        public static bool IsTLSIdChar(char c)
+        {
+            return (
+              Char.IsDigit(c) || Char.IsLetter(c) ||
+              c == '+' ||
+              c == '/' ||
+              c == '-' ||
+              c == '_'
+            );
+        }
+
+        public static bool IsBase64Char(char c)
+        {
+            return Char.IsDigit(c) || Char.IsLetter(c) || c == '+' || c == '/';
+        }
+
+
+        public static bool IsVChar(char c)
+        {
+            return c >= '\u0021' && c <= '\u007E';
+        }
+
+        public static bool IsByteString(char c)
+        {
+            return (
+              (c > '\u0001' && c < '\u0009') ||
+              (c > '\u000B' && c < '\u000C') ||
+              (c > '\u000E' && c < '\u00FF')
+            );
+        }
         protected int consumeTypedTime(string recordValue, int cur)
         {
             var peek = cur;
@@ -629,13 +668,14 @@ namespace io.agora.sdp
             return cur;
         }
 
-        protected int consumePort(string value, int cur)
+        protected int consumePort(string value, int cur, object p)
         {
             return this.consumeOneOrMore(value, cur, Char.IsDigit);
         }
 
-        protected int consume(string value, int cur, string predicate)
+        protected int consume(string value, int cur, object p)
         {
+            string predicate = (string)p;
             for (var i = 0; i < predicate.Length; i++)
             {
                 if (cur + i >= value.Length)
