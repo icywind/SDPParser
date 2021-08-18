@@ -91,7 +91,7 @@ namespace io.agora.sdp
         public IList<string> PhoneNumbers { get; set; }
 
         public ConnectionData ConnectionData { get; set; }
-        public IList<Bandwidth> BandWiths { get; set; }
+        public IList<Bandwidth> BandWidths { get; set; }
 
         // Time Fields
         // SDPLib defines
@@ -101,9 +101,9 @@ namespace io.agora.sdp
         public IList<TimeField> TimeFields { get; set; }
 
         // Key
-        public EncriptionKey EncriptionKey { get; set; }
+        public string Key { get; set; }
 
-        public IList<string> Attributes { get; set; }
+        public IAttributes Attributes { get; set; }
 
         public IList<MediaDescription> MediaDescriptions { get; set; }
 

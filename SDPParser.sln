@@ -1,9 +1,11 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "io.agora.sdp", "SDPParser\io.agora.sdp.csproj", "{18DDEB7E-0606-4069-8B8F-DF30AE6F767C}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D85B3DF9-0C65-46AD-998F-BD720BFC6EE2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sdptests", "sdptests\sdptests.csproj", "{0299CF5A-B680-4179-A335-3892E8DE3DC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "io.agora.sdp", "SDPParser\io.agora.sdp.csproj", "{668A0015-366D-4017-AB87-64A03D717AC0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{18DDEB7E-0606-4069-8B8F-DF30AE6F767C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{18DDEB7E-0606-4069-8B8F-DF30AE6F767C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{18DDEB7E-0606-4069-8B8F-DF30AE6F767C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{18DDEB7E-0606-4069-8B8F-DF30AE6F767C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0299CF5A-B680-4179-A335-3892E8DE3DC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0299CF5A-B680-4179-A335-3892E8DE3DC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0299CF5A-B680-4179-A335-3892E8DE3DC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0299CF5A-B680-4179-A335-3892E8DE3DC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{668A0015-366D-4017-AB87-64A03D717AC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{668A0015-366D-4017-AB87-64A03D717AC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{668A0015-366D-4017-AB87-64A03D717AC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{668A0015-366D-4017-AB87-64A03D717AC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
