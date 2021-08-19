@@ -65,49 +65,48 @@ namespace io.agora.sdp
         /// <summary>
         /// The "v=" field gives the version of the Session Description Protocol.
         /// </summary>
-        public int Version { get; set; }
+        public int version { get; set; }
 
         /// <summary>
         /// The "o=" field gives the originator of the session (her username and
         /// the address of the user's host) plus a session identifier and version
         /// number
         /// </summary>
-        public Origin Origin { get; set; }
+        public Origin origin { get; set; }
 
         /// <summary>
         /// The "s=" field is the textual session name.
         /// </summary>
-        public string SessionName { get; set; }
+        public string sessionName { get; set; }
 
         /// <summary>
         /// The "i=" field provides textual information about the session
         /// </summary>
-        public string SessionInformation { get; set; }
+        public string sessionInformation { get; set; }
 
-        public string Uri { get; set; }
+        public string uri { get; set; }
 
-        public IList<string> EmailNumbers { get; set; }
+        public IList<string> emails { get; set; }
 
-        public IList<string> PhoneNumbers { get; set; }
+        public IList<string> phones { get; set; }
 
-        public ConnectionData ConnectionData { get; set; }
-        public IList<Bandwidth> BandWidths { get; set; }
+        public Connection connection { get; set; }
+        public IList<Bandwidth> bandwidths { get; set; }
 
         // Time Fields
         // SDPLib defines
         //public IList<SDPTimezoneInfo> TimeZones { get; set; }
         //public IList<TimingInfo> Timings { get; set; }
+
         // TS defines
-        public IList<TimeField> TimeFields { get; set; }
+        public IList<TimeField> timeFields { get; set; }
 
         // Key
-        public string Key { get; set; }
+        public string key { get; set; }
 
-        public IAttributes Attributes { get; set; }
+        public IAttributes attributes { get; set; }
 
-        public IList<MediaDescription> MediaDescriptions { get; set; }
-
-        //public IList<RepeatTime> SDPRepeatTimes { get; set; }
+        public IList<MediaDescription> mediaDescriptions { get; set; }
     }
 
     public class Media
@@ -127,28 +126,18 @@ namespace io.agora.sdp
 
     public class Origin
     {
-        public string UserName { get; set; }
-        public string SessionId { get; set; }
-        public string SessionVersion { get; set; }
-        public string Nettype { get; set; }
-        public string AddrType { get; set; }
-        public string UnicastAddress { get; set; }
-
-     //   public Origin(string name, ulong sid, ulong sver, string nettype, string addtype, string address)
-     //   {
-     //       UserName = name;
-     //       SessionId = sid;
-     //       SessionVersion = sver;
-     //       Nettype = nettype;
-     //       AddrType = addtype;
-     //       UnicastAddress = address;
-	    //}
+        public string username { get; set; }
+        public string sessId { get; set; }
+        public string sessVersion { get; set; }
+        public string nettype { get; set; }
+        public string adrtype { get; set; }
+        public string unicastAddress { get; set; }
     }
 
     public class Bandwidth
     {
-        public string Type { get; set; }
-        public string Value { get; set; }
+        public string bwtype { get; set; }
+        public string bandwidth { get; set; }
 
      //   public Bandwidth(string type, string value)
      //   {
@@ -157,34 +146,34 @@ namespace io.agora.sdp
 	    //}
     }
 
-    public class ConnectionData
+    public class Connection
     {
-        public string Nettype { get; set; }
+        public string nettype { get; set; }
 
-        public string AddrType { get; set; }
+        public string addrtype { get; set; }
 
-        public string ConnectionAddress { get; set; }
+        public string address { get; set; }
     }
 
-    public class EncriptionKey
-    {
-        public const string ClearMethod = "clear";
-        public const string Base64Method = "base64";
-        public const string UriMethod = "uri";
-        public const string PromptMethod = "prompt";
+    //public class EncriptionKey
+    //{
+    //    public const string ClearMethod = "clear";
+    //    public const string Base64Method = "base64";
+    //    public const string UriMethod = "uri";
+    //    public const string PromptMethod = "prompt";
 
-        public string Method { get; set; }
-        public string Value { get; set; }
-    }
+    //    public string Method { get; set; }
+    //    public string Value { get; set; }
+    //}
 
     public class MediaDescription
     {
-        public Media Media { get; set; }
-        public string Information { get; set; }
-        public IList<ConnectionData> Connections { get; set; }
-        public IList<Bandwidth> Bandwidths { get; set; }
-        public string Key { get; set; }
-        public MediaAttributes Attributes { get; set; }
+        public Media media { get; set; }
+        public string information { get; set; }
+        public IList<Connection> connections { get; set; }
+        public IList<Bandwidth> bandwidths { get; set; }
+        public string ky { get; set; }
+        public MediaAttributes attributes { get; set; }
     }
 
     public class TimeZoneAdjustment
@@ -195,30 +184,29 @@ namespace io.agora.sdp
     }
 
     // SDPLib define
-    public class SDPTimezoneInfo
-    {
-        public long AdjustmentTime { get; set; }
-        public string Offset { get; set; }
-    }
+    //public class SDPTimezoneInfo
+    //{
+    //    public long AdjustmentTime { get; set; }
+    //    public string Offset { get; set; }
+    //}
 
-    // SDPLib define
     public class TimingInfo
     {
-        public string StartTime { get; set; }
-        public string StopTime { get; set; }
+        public string startTime { get; set; }
+        public string stopTime { get; set; }
     }
 
     public class TimeField
     {
-        public TimingInfo Time { get; set; }
-        public IList<Repeat> Repeats { get; set; }
-        public IList<TimeZoneAdjustment> timeZoneAdjustments { get; set; }  
+        public TimingInfo time { get; set; }
+        public IList<Repeat> repeats { get; set; }
+        public IList<TimeZoneAdjustment> zoneAdjustments { get; set; }  
     }
 
     public class Repeat
     {
-        public string RepeatInterval { get; set; }
-        public IList<string> TypeTimes { get; set; }
+        public string repeatInterval { get; set; }
+        public IList<string> typedTimes { get; set; }
     }
 
     public class Attribute

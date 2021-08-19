@@ -20,7 +20,7 @@ namespace io.agora.sdp
             string[] lines = sdp.Split(new string[] { EOL }, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < lines.Length; i++)
             {
-                Record record = parseLine(lines[i], i);
+                Record record = parseLine(lines[i].Trim(), i);
                 records.Add(record);
             }
             this.currentLine = 0;
@@ -46,19 +46,19 @@ namespace io.agora.sdp
 
             return new SessionDescription
             {
-                Version = version,
-                Origin = origin,
-                SessionName = sessionName,
-                SessionInformation = information,
-                Uri = uri,
-                EmailNumbers = emails,
-                PhoneNumbers = phones,
-                ConnectionData = connection,
-                BandWidths = bandwidths,
-                TimeFields = timeFields,
-                Key = key,
-                Attributes = attributes,
-                MediaDescriptions = mediaDescriptions
+                version = version,
+                origin = origin,
+                sessionName = sessionName,
+                sessionInformation = information,
+                uri = uri,
+                emails = emails,
+                phones = phones,
+                connection = connection,
+                bandwidths = bandwidths,
+                timeFields = timeFields,
+                key = key,
+                attributes = attributes,
+                mediaDescriptions = mediaDescriptions
             };
         }
 
@@ -129,7 +129,7 @@ namespace io.agora.sdp
             {
                 if (sdp[i] == Constants.LF)
                 {
-                    if (sdp[i - 1] == Constants.CR)
+                    if (i > 0 && sdp[i - 1] == Constants.CR)
                     {
                         return Constants.CRLF;
                     }
@@ -143,6 +143,12 @@ namespace io.agora.sdp
             throw new Exception("Invalid newline character.");
         }
 
+        /// <summary>
+        ///    Parse a line into Record, line is trimmed before passing in
+        /// </summary>
+        /// <param name="line"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
         private Record parseLine(string line, int index)
         {
             if (line.Length < 2)
@@ -152,16 +158,32 @@ namespace io.agora.sdp
                 );
             }
 
-            var type = (RECORD_TYPE)line[0];  // may raise casting exception
+            int i = 0;
 
-            if (line[1] != '=')
+            var type = (RECORD_TYPE)line[i];  // may raise casting exception
+            i++;
+
+            // consume space
+            while (i < line.Length && line[i] == Constants.SP)
             {
-                throw new Exception(
-        "Invalid sdp line, < type > should be a single character followed by an = sign."
-      );
+                i++;
             }
 
-            var value = line.Substring(2);
+            if (line[i] != '=')
+            {
+                throw new Exception(
+        "Invalid sdp line, < type > should be a single character followed by an = sign. current line:" + line
+      );
+            }
+            i++;
+
+            // consume space
+            while (i < line.Length && line[i] == Constants.SP)
+            {
+                i++;
+            }
+
+            var value = line.Substring(i);
 
             return new Record(type, value, 0, index);
         }
@@ -310,7 +332,7 @@ namespace io.agora.sdp
                     var repeatInterval = this.extract(record, this.consumeRepeatInterval);
                     var typedTimes = this.parseTypedTime(record);
 
-                    repeats.Add(new Repeat { RepeatInterval = repeatInterval, TypeTimes = typedTimes });
+                    repeats.Add(new Repeat { repeatInterval = repeatInterval, typedTimes = typedTimes });
                     this.currentLine++;
                 }
                 else
@@ -356,7 +378,7 @@ namespace io.agora.sdp
 
             this.currentLine++;
 
-            return new TimingInfo { StartTime = startTime, StopTime = stopTime };
+            return new TimingInfo { startTime = startTime, stopTime = stopTime };
         }
 
         private IList<Bandwidth> parseBandWidth()
@@ -382,7 +404,7 @@ namespace io.agora.sdp
 
                     var bandwidth = this.extractOneOrMore(record, Char.IsDigit);
 
-                    bandwidths.Add(new Bandwidth { Type = bwtype, Value = bandwidth });
+                    bandwidths.Add(new Bandwidth { bwtype = bwtype, bandwidth = bandwidth });
 
                     this.currentLine++;
                 }
@@ -404,19 +426,19 @@ namespace io.agora.sdp
                 throw new Exception("first sdp record must be version");
             }
 
-            var version = record.value.slice(
-              0,
-              this.consumeOneOrMore(record.value, 0, Char.IsDigit)
-            );
+            //var version = record.value.slice(
+            //  0,
+            //  this.consumeOneOrMore(record.value, 0, Char.IsDigit)
+            //);
 
-            if (version.Length != record.value.Length)
-            {
-                throw new Exception($"invalid proto version, v={record.value}");
-            }
+            //if (version.Length != record.value.Length)
+            //{
+            //    throw new Exception($"invalid proto version, v={record.value}");
+            //}
 
             this.currentLine++;
 
-            return int.Parse(version);
+            return int.Parse(record.value);
         }
 
         private Origin parseOrigin()
@@ -444,12 +466,12 @@ namespace io.agora.sdp
 
             return new Origin
             {
-                UserName = username,
-                SessionId = sessId,
-                SessionVersion = sessVersion,
-                Nettype = nettype,
-                AddrType = addrtype,
-                UnicastAddress = unicastAddress,
+                username = username,
+                sessId = sessId,
+                sessVersion = sessVersion,
+                nettype = nettype,
+                adrtype = addrtype,
+                unicastAddress = unicastAddress,
             };
         }
 
@@ -540,7 +562,7 @@ namespace io.agora.sdp
             return phones;
         }
 
-        private ConnectionData parseConnection()
+        private Connection parseConnection()
         {
             var record = this.getCurrentRecord();
 
@@ -554,7 +576,7 @@ namespace io.agora.sdp
 
                 this.currentLine++;
 
-                return new ConnectionData { Nettype = nettype, AddrType = addrtype, ConnectionAddress = address };
+                return new Connection { nettype = nettype, addrtype = addrtype, address = address };
             }
 
             return null;
@@ -618,7 +640,7 @@ namespace io.agora.sdp
                     var time = this.parseTime();
                     var repeats = this.parseRepeat();
                     var zones = this.parseZone();
-                    timeFields.Add(new TimeField { Time = time, Repeats = repeats, timeZoneAdjustments = zones });
+                    timeFields.Add(new TimeField { time = time, repeats = repeats, zoneAdjustments = zones });
                 }
                 else
                 {
@@ -649,12 +671,12 @@ namespace io.agora.sdp
 
                     mediaDescriptions.Add(new MediaDescription
                     {
-                        Media = media,
-                        Information = information,
-                        Connections = connections,
-                        Bandwidths = bandwidths,
-                        Key = key,
-                        Attributes = (MediaAttributes)attributes
+                        media = media,
+                        information = information,
+                        connections = connections,
+                        bandwidths = bandwidths,
+                        ky = key,
+                        attributes = (MediaAttributes)attributes
                     });
                 }
                 else
@@ -678,9 +700,9 @@ namespace io.agora.sdp
             // return [result, i];
         }
 
-        private IList<ConnectionData> parseConnections()
+        private IList<Connection> parseConnections()
         {
-            var connections = new List<ConnectionData>();
+            var connections = new List<Connection>();
             while (this.currentLine < this.records.Count)
             {
                 var record = this.getCurrentRecord();

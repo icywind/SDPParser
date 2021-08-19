@@ -1,4 +1,5 @@
 ﻿using Xunit;
+using System.Collections.Generic;
 using io.agora.sdp;
 
 namespace sdptests
@@ -8,10 +9,16 @@ namespace sdptests
         [Fact]
         public void CanDeSerialize()
         {
-            var expected = "v=0";
-            var version = "v=0";
-            Assert.Equal(expected, version);
+            string expected = SampleSDP.SDP1;
+            Parser parser = new Parser();
+            SessionDescription sessionDescription = parser.Parse(expected);
         }
 
+        [Fact]
+        public void CanPrint()
+        {
+            List<int> list = new List<int>() { 1 };
+            Assert.NotEmpty(list);
+	    }
     }
 }

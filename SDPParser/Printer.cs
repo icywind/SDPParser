@@ -39,19 +39,19 @@ namespace io.agora.sdp
                 this.eol = EOL;
             }
 
-            sdp += this.printVersion(sessionDescription.Version.ToString());
-            sdp += this.printOrigin(sessionDescription.Origin);
-            sdp += this.printSessionName(sessionDescription.SessionName);
-            sdp += this.printInformation(sessionDescription.SessionInformation);
-            sdp += this.printUri(sessionDescription.Uri);
-            sdp += this.printEmail(sessionDescription.EmailNumbers);
-            sdp += this.printPhone(sessionDescription.PhoneNumbers);
-            sdp += this.printConnection(sessionDescription.ConnectionData);
-            sdp += this.printBandwidth(sessionDescription.BandWidths);
-            sdp += this.printTimeFields(sessionDescription.TimeFields);
-            sdp += this.printKey(sessionDescription.Key);
-            sdp += this.printSessionAttributes(sessionDescription.Attributes as SessionAttributes);
-            sdp += this.printMediaDescription(sessionDescription.MediaDescriptions);
+            sdp += this.printVersion(sessionDescription.version.ToString());
+            sdp += this.printOrigin(sessionDescription.origin);
+            sdp += this.printSessionName(sessionDescription.sessionName);
+            sdp += this.printInformation(sessionDescription.sessionInformation);
+            sdp += this.printUri(sessionDescription.uri);
+            sdp += this.printEmail(sessionDescription.emails);
+            sdp += this.printPhone(sessionDescription.phones);
+            sdp += this.printConnection(sessionDescription.connection);
+            sdp += this.printBandwidth(sessionDescription.bandwidths);
+            sdp += this.printTimeFields(sessionDescription.timeFields);
+            sdp += this.printKey(sessionDescription.key);
+            sdp += this.printSessionAttributes(sessionDescription.attributes as SessionAttributes);
+            sdp += this.printMediaDescription(sessionDescription.mediaDescriptions);
 
             return sdp;
         }
@@ -63,7 +63,7 @@ namespace io.agora.sdp
 
         private string printOrigin(Origin origin)
         {
-            return $"o ={ origin.UserName} { origin.SessionId} { origin.SessionVersion} { origin.Nettype} { origin.AddrType} { origin.UnicastAddress}{ this.eol}";
+            return $"o ={ origin.username} { origin.sessId} { origin.sessVersion} { origin.nettype} { origin.adrtype} { origin.unicastAddress}{ this.eol}";
         }
 
         private string printSessionName(string sessionName)
@@ -99,10 +99,10 @@ namespace io.agora.sdp
             return result;
         }
 
-        private string printConnection(ConnectionData connection)
+        private string printConnection(Connection connection)
         {
             return connection != null ?
-                $"c ={ connection.Nettype} { connection.AddrType} { connection.ConnectionAddress}{ this.eol}" :
+                $"c ={ connection.nettype} { connection.addrtype} { connection.address}{ this.eol}" :
             "";
         }
 
@@ -110,7 +110,7 @@ namespace io.agora.sdp
         {
             string result = "";
             foreach (Bandwidth bandwidth in bandwidths) {
-                result += $"b ={ bandwidth.Type}:{ bandwidth.Value}{ this.eol}";
+                result += $"b ={ bandwidth.bwtype}:{ bandwidth.bandwidth}{ this.eol}";
             }
             return result;
         }
@@ -119,15 +119,15 @@ namespace io.agora.sdp
         {
             string result = "";
             foreach (var timeField in timeFields) {
-                result += $"t ={ timeField.Time.StartTime} { timeField.Time.StopTime}{ this.eol}";
+                result += $"t ={ timeField.time.startTime} { timeField.time.stopTime}{ this.eol}";
 
-                foreach (var repeatField in timeField.Repeats) {
-                    result += $"r ={ repeatField.RepeatInterval } { string.Join(" ", repeatField.TypeTimes)}{ this.eol}";
+                foreach (var repeatField in timeField.repeats) {
+                    result += $"r ={ repeatField.repeatInterval } { string.Join(" ", repeatField.typedTimes)}{ this.eol}";
                 }
 
-                if (timeField.timeZoneAdjustments != null)
+                if (timeField.zoneAdjustments != null)
                 {
-                    string zvalue = string.Join(" ", timeField.timeZoneAdjustments.Select((zone) => "" + zone.time + (zone.back ? "-" : "") + zone.typedTime));
+                    string zvalue = string.Join(" ", timeField.zoneAdjustments.Select((zone) => "" + zone.time + (zone.back ? "-" : "") + zone.typedTime));
                     result += $"z =";
                     result += $"z ={zvalue} {this.eol}";
 
@@ -155,17 +155,17 @@ namespace io.agora.sdp
         {
             var result = "";
             foreach (var mediaDescription in mediaDescriptions) {
-                result += this.printMedia(mediaDescription.Media);
-                result += this.printInformation(mediaDescription.Information);
-                result += this.printConnections(mediaDescription.Connections);
-                result += this.printBandwidth(mediaDescription.Bandwidths);
-                result += this.printKey(mediaDescription.Key);
+                result += this.printMedia(mediaDescription.media);
+                result += this.printInformation(mediaDescription.information);
+                result += this.printConnections(mediaDescription.connections);
+                result += this.printBandwidth(mediaDescription.bandwidths);
+                result += this.printKey(mediaDescription.ky);
                 result += this.printMediaAttributes(mediaDescription);
             }
             return result;
         }
 
-        private string printConnections(IList<ConnectionData> connections)
+        private string printConnections(IList<Connection> connections)
         {
             string result = "";
             foreach (var connection in connections) {
@@ -395,7 +395,7 @@ namespace io.agora.sdp
 
 
         public string print(MediaDescription mediaDescription) {
-            var attributes = mediaDescription.Attributes;
+            var attributes = mediaDescription.attributes;
             string lines = "";
 
             lines += this.printRTCP(attributes.rtcp);
