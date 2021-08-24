@@ -29,15 +29,22 @@ using System.Collections.Generic;
 
 namespace io.agora.sdp
 {
-    class MediaAttributeParser : AttributeParser
+    public class MediaAttributeParser : AttributeParser
     {
         MediaAttributes _attributes;
+
+        // For Unit Test
+        public IAttributes Attributes { get { return _attributes; } }
 
         protected override IAttributes attributes
         {
             get { return _attributes; }
             set { _attributes = (MediaAttributes)value; }
         }//  SessionAttributes | MediaAttributes;
+
+        public MediaAttributeParser() {
+            _attributes = new MediaAttributes();
+	    }
 
         public MediaAttributeParser(Media media)
         {
@@ -226,7 +233,7 @@ namespace io.agora.sdp
                 candidate.relPort = this.extract(attribute, this.consumePort);
             }
 
-            while (this.peekChar(attribute) == Constants.SP)
+            while (attribute._cur < attribute.attValue.Length && this.peekChar(attribute) == Constants.SP)
             {
                 this.consumeAttributeSpace(attribute);
                 var extensionAttName = this.extract(attribute, this.consumeToken);
@@ -282,8 +289,9 @@ namespace io.agora.sdp
         {
             var payloadType = this.extract(attribute, this.consumeToken);
             this.consumeAttributeSpace(attribute);
-            var encodingName = this.extract(attribute, this.consumeTill, "/");
+            var encodingName = this.extract(attribute, this.consumeTill, '/').Trim();
             this.extract(attribute, this.consume, "/");
+            this.consumeAttributeSpace(attribute, true);
             var clockRate = this.extractOneOrMore(attribute, Char.IsDigit);
 
             RTPMap rtpMap = new RTPMap(encodingName, clockRate);
@@ -356,7 +364,7 @@ namespace io.agora.sdp
 
             if (this.peekChar(attribute) == ':')
             {
-                this.extract(attribute, this.consume, ':');
+                this.extract(attribute, this.consume, ":");
                 attributeValue = this.extract(attribute, this.consumeTill);
             }
 
@@ -379,8 +387,13 @@ namespace io.agora.sdp
         private void parseFmtp(Attribute attribute)
         {
             var format = this.extract(attribute, this.consumeTill, Constants.SP);
-            this.consumeAttributeSpace(attribute);
+            this.consumeAttributeSpace(attribute, true);
             var parametersString = this.extract(attribute, this.consumeTill);
+
+            if (string.IsNullOrEmpty(parametersString.Trim()))
+            {
+                return; 
+	        }
 
             Dictionary<string, object> parameters = new Dictionary<string, object>();
 
@@ -593,6 +606,7 @@ namespace io.agora.sdp
             _attributes.imageattr.Add(attribute.attValue);
         }
 
+        public void ParseRid(Attribute attribute) => parseRid(attribute);
         private void parseRid(Attribute attribute)
         {
             var id = this.extractOneOrMore(
@@ -615,9 +629,15 @@ namespace io.agora.sdp
                 this.consumeAttributeSpace(attribute);
 
                 //rid-pt-params-list
-                if (this.peek(attribute, "pt="))
+                if (this.peekWithSpace(attribute, "pt", "="))
                 {
-                    this.extract(attribute, this.consume, "pt=");
+                    this.extract(attribute, this.consume, "pt");
+                    int peek = this.consumeZeroOrMore(attribute.attValue, attribute._cur, (c) =>  c == Constants.SP );
+                    attribute._cur = peek;
+                    this.extract(attribute, this.consume, "=");
+                    peek = this.consumeZeroOrMore(attribute.attValue, attribute._cur, (c) =>  c == Constants.SP );
+                    attribute._cur = peek;
+
                     var payloads = new List<string>();
                     while (true)
                     {
@@ -635,12 +655,12 @@ namespace io.agora.sdp
 
                     rid.Payloads = payloads;
 
-                    if (this.peekChar(attribute) == Constants.SP)
-                    {
-                        this.extract(attribute, this.consume, Constants.SP);
-                    }
+                    attribute._cur = consumeZeroOrMore(attribute.attValue, attribute._cur, (c) => c == Constants.SP);
                 }
 
+
+                // RID Params section,  [(key):(value)]*;
+                attribute.Pack();  // remove spaces
                 while (true)
                 {
                     var type = this.extract(attribute, this.consumeToken);
@@ -656,6 +676,7 @@ namespace io.agora.sdp
                                 break;
                             }
                         case "max-width":
+                        case "max-height":
                         case "height-width":
                         case "max-fps":
                         case "max-fs":
@@ -668,7 +689,7 @@ namespace io.agora.sdp
 
                                 if (this.peekChar(attribute) == '=')
                                 {
-                                    this.extract(attribute, this.consume, '=');
+                                    this.extract(attribute, this.consume, "=");
                                     param.val = this.extract(attribute, this.consumeTill, ';');
                                 }
                                 rid.Params.Add(param);
@@ -678,7 +699,7 @@ namespace io.agora.sdp
 
                     try
                     {
-                        this.extract(attribute, this.consume, ';');
+                        this.extract(attribute, this.consume, ";");
                     }
                     catch (Exception e)
                     {

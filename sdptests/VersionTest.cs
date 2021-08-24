@@ -1,24 +1,26 @@
 ﻿using Xunit;
-using System.Collections.Generic;
 using io.agora.sdp;
+using System;
 
 namespace sdptests
 {
     public class VersionTest
     {
-        [Fact]
-        public void CanDeSerialize()
-        {
-            string expected = SampleSDP.SDP1;
-            Parser parser = new Parser();
-            SessionDescription sessionDescription = parser.Parse(expected);
-        }
+        const string teststr = "v=100";
+        const string expected = "100";
 
         [Fact]
-        public void CanPrint()
+        public void CanParse()
         {
-            List<int> list = new List<int>() { 1 };
-            Assert.NotEmpty(list);
-	    }
+            io.agora.sdp.Record rec = Parser.ParseLine(teststr, 0);
+            Parser parser = new Parser();
+            var ver = parser.ParseVersion(rec);
+
+            Console.WriteLine("Version = " + ver);
+
+            Assert.Equal(ver.ToString(), expected);
+        }
     }
 }
+
+

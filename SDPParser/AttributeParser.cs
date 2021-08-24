@@ -83,13 +83,15 @@ namespace io.agora.sdp
             return result;
         }
 
-        protected void consumeAttributeSpace(Attribute attribute)
+        protected void consumeAttributeSpace(Attribute attribute, bool zeroOrMore = false)
         {
-            if (attribute.attValue[attribute._cur] == Constants.SP)
+            int start = attribute._cur;
+            while (attribute._cur < attribute.attValue.Length && attribute.attValue[attribute._cur] == Constants.SP)
             {
                 attribute._cur += 1;
             }
-            else
+
+            if (!zeroOrMore && start == attribute._cur)
             {
                 throw new Exception($"Invalid space at {attribute._cur }.");
             }
@@ -124,8 +126,12 @@ namespace io.agora.sdp
             {
                 throw new Exception();
             }
-
-            return attribute.attValue[attribute._cur];
+            if (attribute._cur < attribute.attValue.Length)
+            {
+                return attribute.attValue[attribute._cur];
+            } else {
+                return Constants.NUL; // avoid index overflow
+	        }
         }
 
         protected bool peek(Attribute attribute, string value)
@@ -137,14 +143,52 @@ namespace io.agora.sdp
 
             for (int i = 0; i < value.Length; i++)
             {
-                if (value[i] != attribute.attValue[attribute._cur + i])
+                try
                 {
-                    return false;
-                }
+                    if (value[i] != attribute.attValue[attribute._cur + i])
+                    {
+                        return false;
+                    }
+                } catch { 
+                    // avoid index out of bound
+		            break; 
+		        }
             }
 
             return true;
         }
+
+        /// <summary>
+        ///     Check if the current position of attribute value string contains
+        /// pattern  (start)(SP)*(end)
+        /// </summary>
+        /// <param name="attribute"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        protected bool peekWithSpace(Attribute attribute, string start, string end)
+        {
+            if (null == attribute.attValue)
+            {
+                throw new Exception();
+            }
+
+            // check start
+            var str = attribute.attValue.Substring(attribute._cur);
+
+            if ( str.Length <= (start.Length + end.Length) || !str.StartsWith(start)) { return false; }
+
+            int peek = start.Length;
+
+            // skip spaces
+            while (peek < str.Length && str[peek] == Constants.SP)
+            {
+                peek++;
+            }
+
+            // match end
+            return str.Substring(peek).StartsWith(end);
+	    }
 
         protected void parseIceUfrag(Attribute attribute)
         {
@@ -172,7 +216,7 @@ namespace io.agora.sdp
 
         protected void parseIceOptions(Attribute attribute)
         {
-            if (this.attributes.iceOptions != null)
+            if (this.attributes.iceOptions.Count > 0)
             {
                 throw new Exception(
                   "Invalid ice-options, should be only one 'ice-options' line"

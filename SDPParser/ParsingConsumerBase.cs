@@ -70,6 +70,12 @@ namespace io.agora.sdp
             var peek = cur;
             while (peek < value.Length)
             {
+                if (till == null)
+                {
+                    // no ending specified, so consume everything
+                    peek = value.Length;
+                    break;
+		        }
                 if (till.GetType().Name == "Char" && value[peek] == (char)till)
                 {
                     break;
@@ -116,11 +122,29 @@ namespace io.agora.sdp
         }
 
 
+        protected int consumeZeroOrMore(string str, int cur, PredictDelegate predict)
+        {
+            var peek = cur;
+
+            while (peek < str.Length)
+            {
+                if (predict(str[peek]))
+                {
+                    peek++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return peek;
+        }
+
         protected int consumeOneOrMore(string str, int cur, PredictDelegate predict)
         {
             var peek = cur;
 
-            while (true)
+            while (peek < str.Length)
             {
                 if (predict(str[peek]))
                 {
@@ -534,7 +558,7 @@ namespace io.agora.sdp
                 peek += 1;
             }
 
-            while (true)
+            while (peek<recordValue.Length)
             {
                 if (Char.IsDigit(recordValue[peek]))
                 {

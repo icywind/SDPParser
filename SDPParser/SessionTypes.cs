@@ -222,6 +222,25 @@ namespace io.agora.sdp
             attValue = value;
             _cur = cur;
 	    }
+
+        /// <summary>
+        ///   Remove any space starting from _cur
+        /// </summary>
+        public void Pack()
+        {
+            string tail = attValue.Substring(0, _cur);
+
+            int i = _cur;
+            while(i<attValue.Length) { 
+                if (attValue[i] != Constants.SP)
+                {
+                    tail += attValue[i];
+		        }
+                i++;
+	        }
+
+            attValue = tail;
+	    }
     }
     // This is internal use
     public class Record

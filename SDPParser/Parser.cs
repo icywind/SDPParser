@@ -14,13 +14,18 @@ namespace io.agora.sdp
             records = new List<Record>();
         }
 
+        public Parser(IList<Record> recs)
+        {
+            records = recs;
+	    }
+
         public SessionDescription Parse(string sdp)
         {
             string EOL = this.probeEOL(sdp);
             string[] lines = sdp.Split(new string[] { EOL }, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < lines.Length; i++)
             {
-                Record record = parseLine(lines[i].Trim(), i);
+                Record record = ParseLine(lines[i].Trim(), i);
                 records.Add(record);
             }
             this.currentLine = 0;
@@ -143,13 +148,15 @@ namespace io.agora.sdp
             throw new Exception("Invalid newline character.");
         }
 
+       //  public static Record ParseLine(string line, int index) => parseLine(line, index);	
+
         /// <summary>
         ///    Parse a line into Record, line is trimmed before passing in
         /// </summary>
         /// <param name="line"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        private Record parseLine(string line, int index)
+        public static Record ParseLine(string line, int index)
         {
             if (line.Length < 2)
             {
@@ -188,6 +195,7 @@ namespace io.agora.sdp
             return new Record(type, value, 0, index);
         }
 
+        public IAttributes ParseSessionAttribute() => parseSessionAttribute();
         private IAttributes parseSessionAttribute()
         {
             var attributeParser = new SessionAttributeParser();
@@ -235,11 +243,11 @@ namespace io.agora.sdp
 
                 var attField = this.extractOneOrMore(
                   record,
-                  (character) => IsTokenChar(character) && character != ':'
+                  (character) => (IsTokenChar(character) || character == Constants.SP) && character != ':'
                 );
                 var attribute = new Attribute { attField = attField, _cur = 0 };
 
-                if (record.value[record.cur] == ':')
+                if (record.cur < record.value.Length && record.value[record.cur] == ':')
                 {
                     record.cur += 1;
                     attribute.attValue = this.extractOneOrMore(record, IsByteString);
@@ -252,9 +260,10 @@ namespace io.agora.sdp
             return attributeParser.digest();
         }
 
-        private string parseKey()
+        public string ParseKey(Record record) => parseKey(record);
+        private string parseKey(Record rec = null)
         {
-            var record = this.getCurrentRecord();
+            var record = rec?? this.getCurrentRecord();
             if (record.type != RECORD_TYPE.KEY)
             {
                 return null;
@@ -275,14 +284,19 @@ namespace io.agora.sdp
             throw new Exception("Invalid key.");
         }
 
+        /// <summary>
+        ///    z=* (time zone adjustments)
+        /// </summary>
+        /// <returns></returns>
         private IList<TimeZoneAdjustment> parseZone()
         {
+            if (currentLine >= records.Count) return null;
             var record = this.getCurrentRecord();
             var adjustments = new List<TimeZoneAdjustment>();
             if (record.type == RECORD_TYPE.ZONE_ADJUSTMENTS)
             {
 
-                while (true)
+                while (currentLine < records.Count)
                 {
                     try
                     {
@@ -322,9 +336,10 @@ namespace io.agora.sdp
 
         private IList<Repeat> parseRepeat()
         {
+            if (currentLine >= records.Count) return null;
             var repeats = new List<Repeat>();
 
-            while (true)
+            while (currentLine < records.Count)
             {
                 var record = this.getCurrentRecord();
                 if (record.type == RECORD_TYPE.REPEAT)
@@ -348,7 +363,7 @@ namespace io.agora.sdp
         {
             var typedTimes = new List<string>();
 
-            while (true)
+            while (currentLine < records.Count)
             {
                 try
                 {
@@ -381,6 +396,7 @@ namespace io.agora.sdp
             return new TimingInfo { startTime = startTime, stopTime = stopTime };
         }
 
+        public IList<Bandwidth> ParseBandWidth() => parseBandWidth();
         private IList<Bandwidth> parseBandWidth()
         {
             var bandwidths = new List<Bandwidth>();
@@ -417,9 +433,10 @@ namespace io.agora.sdp
             return bandwidths;
         }
 
-        private int parseVersion()
+        public int ParseVersion(Record rec) => parseVersion(rec);
+        private int parseVersion(Record rec = null) 
         {
-            var record = this.getCurrentRecord();
+            var record = rec?? this.getCurrentRecord();
 
             if (record.type != RECORD_TYPE.VERSION)
             {
@@ -441,9 +458,11 @@ namespace io.agora.sdp
             return int.Parse(record.value);
         }
 
-        private Origin parseOrigin()
+        public Origin ParseOrigin(Record rec) => parseOrigin(rec);
+
+        private Origin parseOrigin(Record rec = null)
         {
-            var record = this.getCurrentRecord();
+            var record = rec ?? this.getCurrentRecord();
 
             if (record.type != RECORD_TYPE.ORIGIN)
             {
@@ -475,9 +494,10 @@ namespace io.agora.sdp
             };
         }
 
-        private string parseSessionName()
+        public string ParseSessionName(Record rec) => parseSessionName(rec);
+        private string parseSessionName(Record rec = null)
         {
-            var record = this.getCurrentRecord();
+            var record = rec ?? this.getCurrentRecord();
 
             if (record.type == RECORD_TYPE.SESSION_NAME)
             {
@@ -489,9 +509,11 @@ namespace io.agora.sdp
             return null;
         }
 
-        private string parseInformation()
+        public string ParseInformation(Record rec) => parseInformation(rec);
+
+        private string parseInformation(Record rec = null)
         {
-            var record = this.getCurrentRecord();
+            var record = rec ?? this.getCurrentRecord();
 
             if (record.type != RECORD_TYPE.INFORMATION)
             {
@@ -519,12 +541,15 @@ namespace io.agora.sdp
             return null;
         }
 
+        public IList<string> ParseEmail() => parseEmail();
+        public Connection ParseConnection(Record rec) => parseConnection(rec);
+
         private IList<string> parseEmail()
         {
             //todo parsing email
             var emails = new List<string>();
 
-            while (true)
+            while (currentLine < records.Count)
             {
                 var record = this.getCurrentRecord();
                 if (record.type == RECORD_TYPE.EMAIL)
@@ -540,12 +565,13 @@ namespace io.agora.sdp
             return emails;
         }
 
+        public IList<string> ParsePhone() => parsePhone();
         private IList<string> parsePhone()
         {
             //todo parsing phone
             var phones = new List<string>();
 
-            while (true)
+            while (currentLine < records.Count)
             {
                 var record = this.getCurrentRecord();
                 if (record.type == RECORD_TYPE.PHONE)
@@ -562,9 +588,9 @@ namespace io.agora.sdp
             return phones;
         }
 
-        private Connection parseConnection()
+        private Connection parseConnection(Record rec = null)
         {
-            var record = this.getCurrentRecord();
+            var record = rec?? this.getCurrentRecord();
 
             if (record.type == RECORD_TYPE.CONNECTION)
             {
@@ -582,9 +608,10 @@ namespace io.agora.sdp
             return null;
         }
 
-        private Media parseMedia()
+        public Media ParseMedia(Record rec) => parseMedia(rec);
+        private Media parseMedia(Record rec = null)
         {
-            var record = this.getCurrentRecord();
+            var record = rec??this.getCurrentRecord();
 
             var mediaType = this.extract(record, this.consumeToken);
 
@@ -601,12 +628,29 @@ namespace io.agora.sdp
 
             List<string> protos = new List<string>();
             protos.Add(this.extract(record, this.consumeToken));
+            record.cur += 1;
 
-            while (true)
+            // Parse Protocol1/Protocol2/Protocol3, note there could be space in between /
+            while (record.cur < record.value.Length)
             {
-                if (record.value[record.cur] == '/')
+                char character = record.value[record.cur];
+                //if (record.value[record.cur] == Constants.SP)
+                if(character == Constants.SP)
                 {
                     record.cur += 1;
+                    continue;
+                }
+                //if (record.value[record.cur] == '/')
+                if(character == '/')
+                {
+                    record.cur += 1;
+                    while(record.cur < record.value.Length) {
+                        if (record.value[record.cur] == Constants.SP)
+                        {
+                            record.cur += 1;
+                        }
+                        else break;
+		            }
                     protos.Add(this.extract(record, this.consumeToken));
                 }
                 else
@@ -620,6 +664,13 @@ namespace io.agora.sdp
                 throw new Exception("Invalid proto");
             }
 
+            //while (record.cur < record.value.Length)
+            //{
+            //    if (record.value[record.cur] == Constants.SP)
+            //    {
+            //        record.cur += 1;
+            //    }
+            //}
             var fmts = this.parseFmt(record);
 
             this.currentLine++;
@@ -627,11 +678,18 @@ namespace io.agora.sdp
             return new Media { mediaType = mediaType, port = port, protos = protos, fmts = fmts };
         }
 
+        public IList<TimeField> ParseTimeFields() => parseTimeFields();
+        /// <summary>
+        ///         t=  (time the session is active)
+        ///         r=* (zero or more repeat times)
+        ///         z=* (time zone adjustments)
+        /// </summary>
+        /// <returns></returns>
         private IList<TimeField> parseTimeFields()
         {
             var timeFields = new List<TimeField>();
 
-            while (true)
+            while (this.currentLine < this.records.Count)
             {
                 var record = this.getCurrentRecord();
 
@@ -650,6 +708,8 @@ namespace io.agora.sdp
 
             return timeFields;
         }
+
+        public IList<MediaDescription> ParseMediaDescription() => parseMediaDescription();
 
         private IList<MediaDescription> parseMediaDescription()
         {
@@ -700,6 +760,8 @@ namespace io.agora.sdp
             // return [result, i];
         }
 
+
+        public IList<Connection> ParseConnections() => parseConnections();
         private IList<Connection> parseConnections()
         {
             var connections = new List<Connection>();
@@ -716,6 +778,7 @@ namespace io.agora.sdp
             return connections;
         }
 
+        public IList<string> ParseFmt(Record record) => parseFmt(record);
         private IList<string> parseFmt(Record record)
         {
             var fmts = new List<string>();
@@ -725,10 +788,15 @@ namespace io.agora.sdp
                 try
                 {
                     this.consumeSpaceForRecord(record);
+                }
+                catch (Exception e) { 
+                    // ignore whether not there is a space
+		        }
+                try
+                { 
                     fmts.Add(this.extract(record, this.consumeToken));
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) { 
                     break;
                 }
             }
