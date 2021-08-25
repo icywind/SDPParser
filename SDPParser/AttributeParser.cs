@@ -475,7 +475,7 @@ namespace io.agora.sdp
                 {
                     this.consumeAttributeSpace(attribute);
                 }
-                catch (Exception e)
+                catch 
                 {
                     break;
                 }

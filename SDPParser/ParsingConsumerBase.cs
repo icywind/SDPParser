@@ -255,7 +255,7 @@ namespace io.agora.sdp
                 {
                     peek = this.consumeHexseq(str, peek);
                 }
-                catch (Exception e) { }
+                catch  { }
 
                 return peek;
             }
@@ -271,7 +271,7 @@ namespace io.agora.sdp
                 {
                     peek = this.consumeHexseq(str, peek);
                 }
-                catch (Exception e) { }
+                catch { }
 
                 return peek;
             }
@@ -395,7 +395,7 @@ namespace io.agora.sdp
                             cur = this.consumeFQDN(str, cur);
                             return cur;
                         }
-                        catch (Exception e)
+                        catch
                         {
                             cur = this.consumeExtnAddr(str, cur);
                             return cur;

@@ -268,7 +268,7 @@ namespace io.agora.sdp
                 {
                     this.consumeAttributeSpace(attribute);
                 }
-                catch (Exception e)
+                catch 
                 {
                     break;
                 }
@@ -650,7 +650,7 @@ namespace io.agora.sdp
                         {
                             this.extract(attribute, this.consume, ",");
                         }
-                        catch (Exception e)
+                        catch
                         {
                             break;
                         }
@@ -704,7 +704,7 @@ namespace io.agora.sdp
                     {
                         this.extract(attribute, this.consume, ";");
                     }
-                    catch (Exception e)
+                    catch
                     {
                         break;
                     }
@@ -760,7 +760,7 @@ namespace io.agora.sdp
                     var ssrcId = this.extract(attribute, this.consumeInteger);
                     ssrcIds.Add(long.Parse(ssrcId));
                 }
-                catch (Exception e)
+                catch 
                 {
                     break;
                 }

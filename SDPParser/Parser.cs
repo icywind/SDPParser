@@ -315,7 +315,7 @@ namespace io.agora.sdp
 
                         adjustments.Add(adjust);
                     }
-                    catch (Exception e)
+                    catch
                     {
                         break;
                     }
@@ -370,7 +370,7 @@ namespace io.agora.sdp
                     this.consumeSpaceForRecord(record);
                     typedTimes.Add(this.extract(record, this.consumeTypedTime));
                 }
-                catch (Exception e)
+                catch 
                 {
                     break;
                 }
@@ -789,14 +789,14 @@ namespace io.agora.sdp
                 {
                     this.consumeSpaceForRecord(record);
                 }
-                catch (Exception e) { 
+                catch  { 
                     // ignore whether not there is a space
 		        }
                 try
                 { 
                     fmts.Add(this.extract(record, this.consumeToken));
                 }
-                catch (Exception e) { 
+                catch { 
                     break;
                 }
             }
