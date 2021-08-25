@@ -148,7 +148,6 @@ namespace io.agora.sdp
             throw new Exception("Invalid newline character.");
         }
 
-       //  public static Record ParseLine(string line, int index) => parseLine(line, index);	
 
         /// <summary>
         ///    Parse a line into Record, line is trimmed before passing in
@@ -195,7 +194,6 @@ namespace io.agora.sdp
             return new Record(type, value, 0, index);
         }
 
-        public IAttributes ParseSessionAttribute() => parseSessionAttribute();
         private IAttributes parseSessionAttribute()
         {
             var attributeParser = new SessionAttributeParser();
@@ -260,7 +258,6 @@ namespace io.agora.sdp
             return attributeParser.digest();
         }
 
-        public string ParseKey(Record record) => parseKey(record);
         private string parseKey(Record rec = null)
         {
             var record = rec?? this.getCurrentRecord();
@@ -396,7 +393,6 @@ namespace io.agora.sdp
             return new TimingInfo { startTime = startTime, stopTime = stopTime };
         }
 
-        public IList<Bandwidth> ParseBandWidth() => parseBandWidth();
         private IList<Bandwidth> parseBandWidth()
         {
             var bandwidths = new List<Bandwidth>();
@@ -433,7 +429,6 @@ namespace io.agora.sdp
             return bandwidths;
         }
 
-        public int ParseVersion(Record rec) => parseVersion(rec);
         private int parseVersion(Record rec = null) 
         {
             var record = rec?? this.getCurrentRecord();
@@ -458,7 +453,6 @@ namespace io.agora.sdp
             return int.Parse(record.value);
         }
 
-        public Origin ParseOrigin(Record rec) => parseOrigin(rec);
 
         private Origin parseOrigin(Record rec = null)
         {
@@ -494,7 +488,6 @@ namespace io.agora.sdp
             };
         }
 
-        public string ParseSessionName(Record rec) => parseSessionName(rec);
         private string parseSessionName(Record rec = null)
         {
             var record = rec ?? this.getCurrentRecord();
@@ -509,7 +502,6 @@ namespace io.agora.sdp
             return null;
         }
 
-        public string ParseInformation(Record rec) => parseInformation(rec);
 
         private string parseInformation(Record rec = null)
         {
@@ -541,8 +533,6 @@ namespace io.agora.sdp
             return null;
         }
 
-        public IList<string> ParseEmail() => parseEmail();
-        public Connection ParseConnection(Record rec) => parseConnection(rec);
 
         private IList<string> parseEmail()
         {
@@ -565,7 +555,6 @@ namespace io.agora.sdp
             return emails;
         }
 
-        public IList<string> ParsePhone() => parsePhone();
         private IList<string> parsePhone()
         {
             //todo parsing phone
@@ -608,7 +597,6 @@ namespace io.agora.sdp
             return null;
         }
 
-        public Media ParseMedia(Record rec) => parseMedia(rec);
         private Media parseMedia(Record rec = null)
         {
             var record = rec??this.getCurrentRecord();
@@ -678,7 +666,6 @@ namespace io.agora.sdp
             return new Media { mediaType = mediaType, port = port, protos = protos, fmts = fmts };
         }
 
-        public IList<TimeField> ParseTimeFields() => parseTimeFields();
         /// <summary>
         ///         t=  (time the session is active)
         ///         r=* (zero or more repeat times)
@@ -709,7 +696,6 @@ namespace io.agora.sdp
             return timeFields;
         }
 
-        public IList<MediaDescription> ParseMediaDescription() => parseMediaDescription();
 
         private IList<MediaDescription> parseMediaDescription()
         {
@@ -761,7 +747,6 @@ namespace io.agora.sdp
         }
 
 
-        public IList<Connection> ParseConnections() => parseConnections();
         private IList<Connection> parseConnections()
         {
             var connections = new List<Connection>();
@@ -778,7 +763,6 @@ namespace io.agora.sdp
             return connections;
         }
 
-        public IList<string> ParseFmt(Record record) => parseFmt(record);
         private IList<string> parseFmt(Record record)
         {
             var fmts = new List<string>();
@@ -808,5 +792,26 @@ namespace io.agora.sdp
 
             return fmts;
         }
+
+
+#if ENABLE_UNIT_TEST
+        #region --- Exposion to Unit Tests ---
+        public string ParseKey(Record record) => parseKey(record);
+        public IAttributes ParseSessionAttribute() => parseSessionAttribute();
+        public IList<string> ParseFmt(Record record) => parseFmt(record);
+        public IList<Bandwidth> ParseBandWidth() => parseBandWidth();
+        public int ParseVersion(Record rec) => parseVersion(rec);
+        public Origin ParseOrigin(Record rec) => parseOrigin(rec);
+        public string ParseSessionName(Record rec) => parseSessionName(rec);
+        public string ParseInformation(Record rec) => parseInformation(rec);
+        public IList<string> ParseEmail() => parseEmail();
+        public Connection ParseConnection(Record rec) => parseConnection(rec);
+        public IList<string> ParsePhone() => parsePhone();
+        public Media ParseMedia(Record rec) => parseMedia(rec);
+        public IList<TimeField> ParseTimeFields() => parseTimeFields();
+        public IList<MediaDescription> ParseMediaDescription() => parseMediaDescription();
+        public IList<Connection> ParseConnections() => parseConnections();
+        #endregion
+#endif
     }
 }

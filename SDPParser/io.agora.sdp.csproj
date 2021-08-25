@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <DefineConstants>ENABLE_UNIT_TEST</DefineConstants>
   </PropertyGroup>
 
   <ProjectExtensions>
