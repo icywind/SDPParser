@@ -67,7 +67,8 @@ a=rid:2 send pt = 98 max-width=320;max-height=180
 a=rid:3 send pt = 99 max-width=320;max-height=180
 a=ssrc:55543 label:oTwikEfJsdv0";
 
-public const string SDP2 = @"v=0
+public const string SDP2 = @"
+v=0
 o=- 788349932267013171 2 IN IP4 127.0.0.1
 s=-
 t=0 0
@@ -189,8 +190,10 @@ a=ssrc:3104457674 label:d49f05f2-9134-4789-91c0-5a6c086fd647
 a = ssrc:214134762 cname:uuCSZpHdKeFrsvZx
 a = ssrc:214134762 msid:- d49f05f2-9134-4789-91c0-5a6c086fd647
 a = ssrc:214134762 mslabel:-
-a=ssrc:214134762 label:d49f05f2-9134-4789-91c0-5a6c086fd647`;
-const SDP3 = `v=0
+a=ssrc:214134762 label:d49f05f2-9134-4789-91c0-5a6c086fd647";
+
+public const string SDP3 = @"
+v=0
 o=- 3827731648519876250 2 IN IP4 127.0.0.1
 s=-
 t=0 0

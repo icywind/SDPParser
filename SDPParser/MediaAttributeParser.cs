@@ -86,7 +86,7 @@ namespace io.agora.sdp
                     case "candidate":
                         this.parseCandidate(attribute);
                         break;
-                    case "remote-candidate":
+                    case "remote-candidates":
                         this.parseRemoteCandidate(attribute);
                         break;
                     case "end-of-candidates":
@@ -158,6 +158,9 @@ namespace io.agora.sdp
                     case "ssrc-group":
                         this.parseSSRCGroup(attribute);
                         break;
+                    case "x-google-flag":
+                        this.parseXGoogleFlag(attribute);
+                        break;
                     default:
                         attribute.ignored = true;
                         _attributes.unrecognized.Add(attribute);
@@ -171,7 +174,7 @@ namespace io.agora.sdp
                 throw e;
             }
 
-            if ((attribute.ignored == null || attribute.ignored == false) && attribute.attValue != null && !this.atEnd(attribute))
+            if ((attribute.ignored != null && attribute.ignored == true) && attribute.attValue != null && !this.atEnd(attribute))
             {
                 throw new Exception("attribute parsing error");
             }
@@ -622,7 +625,7 @@ namespace io.agora.sdp
               this.consumeToken
             ); //as RID["direction"];
 
-            RID rid = new RID { Id = id, Direction = direction };
+            RID rid = new RID { id = id, direction = direction };
 
             if (this.peekChar(attribute) == Constants.SP)
             {
@@ -653,14 +656,14 @@ namespace io.agora.sdp
                         }
                     }
 
-                    rid.Payloads = payloads;
+                    rid.payloads = payloads;
 
                     attribute._cur = consumeZeroOrMore(attribute.attValue, attribute._cur, (c) => c == Constants.SP);
                 }
 
 
                 // RID Params section,  [(key):(value)]*;
-                attribute.Pack();  // remove spaces
+                attribute.PackValue();  // remove spaces
                 while (true)
                 {
                     var type = this.extract(attribute, this.consumeToken);
@@ -672,7 +675,7 @@ namespace io.agora.sdp
                                 var val = this.extract(attribute, this.consume, "=");
                                 var rids = val.Split(new char[] { ',' });
                                 RIDDependParam param = new RIDDependParam() { rids = rids };
-                                rid.Params.Add(param);
+                                rid.@params.Add(param);
                                 break;
                             }
                         case "max-width":
@@ -692,7 +695,7 @@ namespace io.agora.sdp
                                     this.extract(attribute, this.consume, "=");
                                     param.val = this.extract(attribute, this.consumeTill, ';');
                                 }
-                                rid.Params.Add(param);
+                                rid.@params.Add(param);
                                 break;
                             }
                     }
@@ -766,7 +769,10 @@ namespace io.agora.sdp
             _attributes.ssrcGroups.Add(new SSRCGroup() { semantic = semantic, ssrcIds = ssrcIds });
         }
 
-
+        private void parseXGoogleFlag(Attribute attribute)
+        {
+            _attributes.xGoogleFlag = this.extract(attribute, this.consumeToken);
+        }
     }
 
 

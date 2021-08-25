@@ -212,7 +212,11 @@ namespace io.agora.sdp
     public class Attribute
     {
         public bool? ignored { get; set; }
-        public string attField { get; set; }
+        private string _field = default(string);
+        public string attField { 
+	        get { return _field; } 
+	        set { _field = Pack(value); } 
+	    }
         public string attValue { get; set; }
         public int _cur { get; set; }
         public Attribute() { }
@@ -223,10 +227,22 @@ namespace io.agora.sdp
             _cur = cur;
 	    }
 
+        private string Pack(string str) {
+            string retstr = "";
+            for(int i = 0; i < str.Length; i++)
+            { 
+	            if (str[i] != Constants.SP) {
+                    retstr += str[i];
+		        } 
+	        }
+
+            return retstr;
+	    }
+
         /// <summary>
         ///   Remove any space starting from _cur
         /// </summary>
-        public void Pack()
+        public void PackValue()
         {
             string tail = attValue.Substring(0, _cur);
 

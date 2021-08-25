@@ -92,8 +92,6 @@ namespace sdptests
             var Attributes = parser.ParseMediaDescription();
             string json = JsonConvert.SerializeObject(Attributes);
             Console.WriteLine("Attributes:\n" + json);
-
-            // Assert.Equal(json, expected);
         }
 
         // Attribute inside Media

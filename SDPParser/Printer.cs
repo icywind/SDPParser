@@ -677,16 +677,16 @@ namespace io.agora.sdp
             string str = "";
             var ridlist = rids.Select((rid) =>
             {
-                string result = $"a=rid:{rid.Id}{Constants.SP}{rid.Direction}";
+                string result = $"a=rid:{rid.id}{Constants.SP}{rid.direction}";
 
-                if (rid.Payloads != null)
+                if (rid.payloads != null)
                 {
-                    result += $"{Constants.SP}pt=" + string.Join(",", rid.Payloads);
+                    result += $"{Constants.SP}pt=" + string.Join(",", rid.payloads);
                 }
 
-                if (rid.Params.Count > 0)
+                if (rid.@params.Count > 0)
                 {
-                    var paramstr = string.Join(":", rid.Params
+                    var paramstr = string.Join(":", rid.@params
                     .Select((param) =>
                     {
                         if (param.type == "depend")

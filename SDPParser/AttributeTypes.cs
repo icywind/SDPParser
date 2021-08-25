@@ -326,15 +326,15 @@ namespace io.agora.sdp
 
     public class RID
     {
-        public string Id { get; set; }
-        public string Direction { get; set; } // "send" | "recv";
-        public IList<string> Payloads { get; set; }
-        public IList<RIDParam> Params { get; set; }
+        public string id { get; set; }
+        public string direction { get; set; } // "send" | "recv";
+        public IList<string> payloads { get; set; }
+        public IList<RIDParam> @params { get; set; }
 
         public RID()
         {
-            Payloads = new List<string>();
-            Params = new List<RIDParam>();
+            payloads = new List<string>();
+            @params = new List<RIDParam>();
 	    }
     }
     #endregion
@@ -443,6 +443,7 @@ namespace io.agora.sdp
         public IList<PayloadAttribute> payloads { get; set; }
         public IList<RTCPFeedback> rtcpFeedbackWildcards { get; set; }
         public IList<SSRCGroup> ssrcGroups { get; set; }
+        public string xGoogleFlag { get; set; }
 
         public MediaAttributes()
         {
