@@ -31,7 +31,7 @@ namespace io.agora.sdp
         public const char LF = '\u000A';
         public const char NUL = '\u0000';
         public const char SP = '\u0020';
-        public const string CRLF = "${CR}${LF}";
+        public const string CRLF = "\u000D\u000A";
     }
 
     public enum RECORD_TYPE

@@ -478,7 +478,7 @@ namespace io.agora.sdp
                 peek += 1;
             }
 
-            while (true)
+            while (peek < str.Length)
             {
                 if (Char.IsDigit(str[peek]))
                 {

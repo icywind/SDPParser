@@ -35,37 +35,38 @@ namespace sdptests
     {
         //string expected = "";
         List<string> SampleSDPText = new List<string> {
-            "m = video 4700 RTP / SAVPF 96",
-            "c = IN IP4 58.211.82.4",
-            "a = rtcp:4700 IN IP4 58.211.82.4",
-            "a = candidate:1 1 udp 2103266323 58.211.82.4 4700 typ host generation 0",
-            "a = candidate:1 2 udp 2103266323 58.211.82.4 4700 typ host generation 0",
-            "a = remote - candidates:1 192.0.2.3 45664",
-            "a = remote - candidates:2 192.0.2.3 45665",
-            "a = ice - ufrag:zuXp",
-            "a = ice - pwd:NaYeZ7O1ZH / 0U5m + Lz2sxV5m",
-            "a = ice - lite",
-            "a = ice - options:rtp + ecn",
-            "a = extmap:2 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time",
-            "a = extmap:3 urn:3gpp:video - orientation",
-            "a = x - google - flag:conference",
-            "a = fingerprint:sha - 256 E8:3B:64:86:19:EC:D9:7E:70:C3:B0:DB:AD:13:F5:B1:B4:9A:34:17:A1:B9:D9:2D:D0:92:12:E3:2D:F8:E3:B5",
-            "a = sendrecv",
-            "a = mid:0",
-            "a = rtcp - mux",
-            "a = rtpmap:96 VP8 / 90000",
-            "a = fmtp:96",
-            "a = rtcp - fb:96 ccm fir",
-            "a = rtcp - fb:96 nack",
-            "a = rtcp - fb:96 nack pli",
-            "a = rtcp - fb:96 goog - remb",
-            "a = ssrc:55543 cname:o / i14u9pJrxRKAsu",
-            "a = ssrc:55543 msid:oTwikEfJsd v0",
-            "a = ssrc:55543 mslabel:oTwikEfJsd",
-            "a = rid:1 send pt = 97 max - width = 1280; max-height=720",
-            "a=rid:2 send pt = 98 max-width=320;max-height=180",
-            "a=rid:3 send pt = 99 max-width=320;max-height=180",
-            "a=ssrc:55543 label:oTwikEfJsdv0"
+            //"m = video 9 UDP/TLS/RTP/SAVPF 96 97 98 99 100 101 102 121 127 120 125 107 108 109 124 119 123 118 114 115 116",
+            "m=video 4700 RTP/SAVPF 96",
+            "c=IN IP4 58.211.82.4",
+            "a=rtcp:4700 IN IP4 58.211.82.4",
+            "a=candidate:1 1 udp 2103266323 58.211.82.4 4700 typ host generation 0",
+            "a=candidate:1 2 udp 2103266323 58.211.82.4 4700 typ host generation 0",
+            "a=remote-candidates:1 192.0.2.3 45664",
+            "a=remote-candidates:2 192.0.2.3 45665",
+            "a=ice-ufrag:zuXp",
+            "a=ice-pwd:NaYeZ7O1ZH/0U5m+Lz2sxV5m",
+            "a=ice-lite",
+            "a=ice-options:rtp+ecn",
+            "a=extmap:2 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time",
+            "a=extmap:3 urn:3gpp:video-orientation",
+            "a=x-google-flag:conference",
+            "a=fingerprint:sha-256 E8:3B:64:86:19:EC:D9:7E:70:C3:B0:DB:AD:13:F5:B1:B4:9A:34:17:A1:B9:D9:2D:D0:92:12:E3:2D:F8:E3:B5",
+            "a=sendrecv",
+            "a=mid:0",
+            "a=rtcp-mux",
+            "a=rtpmap:96 VP8/90000",
+            "a=fmtp:96      ",
+            "a=rtcp-fb:96 ccm fir",
+            "a=rtcp-fb:96 nack",
+            "a=rtcp-fb:96 nack pli",
+            "a=rtcp-fb:96 goog-remb",
+            "a=ssrc:55543 cname:o/i14u9pJrxRKAsu",
+            "a=ssrc:55543 msid:oTwikEfJsd v0",
+            "a=ssrc:55543 mslabel:oTwikEfJsd",
+            "a=rid:1 send pt=97 max-width=1280;max-height=720",
+            "a=rid:2 send pt=98 max-width=320;max-height=180",
+            "a=rid:3 send pt=99 max-width=320;max-height=180",
+            "a=ssrc:55543 label:oTwikEfJsdv0" 
         };
 
         private Parser InjectRecords()
@@ -84,6 +85,16 @@ namespace sdptests
 
             return new Parser(records);
 	    }
+
+        [Fact]
+        public void ParseMedia()
+        {
+            io.agora.sdp.Record rec = Parser.ParseLine(SampleSDPText[0], 0);
+            Parser parser = new Parser();
+            var result = parser.ParseMedia(rec);
+
+            Console.WriteLine("result = \n" + result.ToString());
+        }
 
         [Fact]
         public void ParseMediaAttribute()

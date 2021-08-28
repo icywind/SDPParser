@@ -184,7 +184,7 @@ namespace io.agora.sdp
         {
             string protos = string.Join("/", media.protos);
             string fmts = string.Join(" ", media.fmts);
-            return $"m ={ media.mediaType} { media.port} {protos} {fmts}{this.eol}";
+            return $"m={ media.mediaType} { media.port} {protos} {fmts}{this.eol}";
         }
 
         private string printSessionAttributes(SessionAttributes attributes)
@@ -229,7 +229,7 @@ namespace io.agora.sdp
             }
             else
             {
-                return $"a=ice-pwd:${ icePwd}${ this.eol}";
+                return $"a=ice-pwd:{ icePwd}{ this.eol}";
             }
         }
 
@@ -338,7 +338,7 @@ namespace io.agora.sdp
                 var strs = groups.Select(
                     (group) =>
                       $"a=group:{ group.semantic}" +
-                     string.Join("", group.identificationTag.Select((item) => Constants.SP + item)) + // $"${ Constants.SP}${ item}")
+                     string.Join("", group.identificationTag.Select((item) => Constants.SP + item)) + // $"{ Constants.SP}{ item}")
                      this.eol
                 );
                 result += string.Join("", strs);
@@ -527,6 +527,7 @@ namespace io.agora.sdp
 
         private string printXGoogleFlag(string flag)
         {
+            if (string.IsNullOrEmpty(flag)) { return ""; }
             return "a=x-google-flag:" + flag + eol;
 	    }
 
@@ -570,7 +571,7 @@ namespace io.agora.sdp
 
             if (keys.Length == 1 && fmtp.parameters[keys[0]] == null) {
                 //not xxx=yyy;aaa=bbb format
-                return $"a=fmtp:${payloadType}" + Constants.SP + $"{keys[0]}{this.eol}";
+                return $"a=fmtp:{payloadType}" + Constants.SP + $"{keys[0]}{this.eol}";
             }
 
             var fparamkeys = fmtp.parameters.Keys.Select(
@@ -669,7 +670,7 @@ namespace io.agora.sdp
                 return "";
             }
 
-            string result = $"a=rtcp:${rtcp.port}";
+            string result = $"a=rtcp:{rtcp.port}";
 
             if (rtcp.netType != null) {
                 result += $"{Constants.SP}{rtcp.netType}";
@@ -689,7 +690,7 @@ namespace io.agora.sdp
         private string printMSId(IList<MSID> msids) {
             string result = string.Join("", msids.Select(
                         (msid) =>
-                          $"a=msid:{msid.id}" + msid.appdata == null ? "" : $"{Constants.SP}{msid.appdata}" +
+                          $"a=msid:{msid.id}" + (msid.appdata == null ? "" : $"{Constants.SP}{msid.appdata}") +
                             this.eol
                       ));
 
@@ -760,13 +761,17 @@ namespace io.agora.sdp
         }
 
         private string printSSRCGroups(IList<SSRCGroup> ssrcGroups) {
-            return string.Join("", ssrcGroups
-              .Select(
-                (ssrcGroup) =>
-                  $"a=ssrc-group:{ssrcGroup.semantic}" +
-                    string.Join("", ssrcGroup.ssrcIds.Select((id) => $"{Constants.SP}{id}")
-                    + this.eol)
-              ));
+            string ret = "";
+            foreach(var group in ssrcGroups)
+            {
+                string g_str = $"a=ssrc-group:{group.semantic}";
+                foreach(var id in group.ssrcIds) {
+                    g_str += " " + id;
+		        }
+                ret += g_str + this.eol;
+            }
+
+            return ret;
         }
     }
 }

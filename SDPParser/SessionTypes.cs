@@ -114,14 +114,20 @@ namespace io.agora.sdp
         public string mediaType { get; set; }
         public string port { get; set; }
         public IList<string> protos { get; set; } 
-        public IList<string> fmts { get; set; } 
-     //   public Media(string mt, string po, IList<string> pro, IList<string> fm)
-     //   {
-     //       mediaType = mt;
-     //       port = po;
-     //       protos = pro;
-     //       fmts = fm;
-	    //}
+        public IList<string> fmts { get; set; }
+        //   public Media(string mt, string po, IList<string> pro, IList<string> fm)
+        //   {
+        //       mediaType = mt;
+        //       port = po;
+        //       protos = pro;
+        //       fmts = fm;
+        //}
+        public override string ToString()
+        {
+            string s_protos = string.Join("/", protos);
+            string s_fmts = string.Join(" ", fmts);
+            return $"{mediaType} {port} {s_protos} {s_fmts}"; 
+        }
     }
 
     public class Origin

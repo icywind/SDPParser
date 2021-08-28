@@ -616,7 +616,7 @@ namespace io.agora.sdp
 
             List<string> protos = new List<string>();
             protos.Add(this.extract(record, this.consumeToken));
-            record.cur += 1;
+            // record.cur += 1;
 
             // Parse Protocol1/Protocol2/Protocol3, note there could be space in between /
             while (record.cur < record.value.Length)
