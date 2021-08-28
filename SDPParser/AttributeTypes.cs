@@ -132,6 +132,11 @@ namespace io.agora.sdp
             connectionAddress = caddr;
             port = po;
 	    }
+
+        public override string ToString()
+        {
+            return $"{componentId} {connectionAddress} {port}";
+        }
     }
 
     public class RTPMap
@@ -375,6 +380,7 @@ namespace io.agora.sdp
     //  public class PayloadMap = Record<string, PayloadAttribute>;
     public interface IAttributes {
          string iceUfrag { get; set; }
+         bool? iceLite { get; set; }
          string icePwd { get; set; }
          IList<string> iceOptions { get; set; }
          IList<FingerPrint> fingerprints { get; set; }
@@ -415,6 +421,7 @@ namespace io.agora.sdp
         public string mid { get; set; }
         public string iceUfrag { get; set; }
         public string icePwd { get; set; }
+        public bool? iceLite { get; set; }
         public IList<string> iceOptions { get; set; }
         public IList<Candidate> candidates { get; set; }
         public IList<RemoteCandidate> remoteCandidatesList { get; set; }

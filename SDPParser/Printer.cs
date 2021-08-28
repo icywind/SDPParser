@@ -31,6 +31,12 @@ namespace io.agora.sdp
     public class Printer
     {
         private string eol = Constants.CRLF;
+        public static string Print(SessionDescription sessionDescription, string EOL=Constants.CRLF)
+        {
+            Printer printer = new Printer();
+            return printer.print(sessionDescription, EOL);
+	    }
+
         public string print(SessionDescription sessionDescription, string EOL)
         {
             string sdp = "";
@@ -125,10 +131,10 @@ namespace io.agora.sdp
                     result += $"r ={ repeatField.repeatInterval } { string.Join(" ", repeatField.typedTimes)}{ this.eol}";
                 }
 
-                if (timeField.zoneAdjustments != null)
+                if (timeField.zoneAdjustments != null && timeField.zoneAdjustments.Count > 0)
                 {
                     string zvalue = string.Join(" ", timeField.zoneAdjustments.Select((zone) => "" + zone.time + (zone.back ? "-" : "") + zone.typedTime));
-                    result += $"z =";
+                    // result += $"z =";
                     result += $"z ={zvalue} {this.eol}";
 
                     result += this.eol;
@@ -178,7 +184,7 @@ namespace io.agora.sdp
         {
             string protos = string.Join("/", media.protos);
             string fmts = string.Join(" ", media.fmts);
-            return $"m =${ media.mediaType} ${ media.port} {protos} {fmts}${ this.eol}";
+            return $"m ={ media.mediaType} { media.port} {protos} {fmts}{this.eol}";
         }
 
         private string printSessionAttributes(SessionAttributes attributes)
@@ -229,7 +235,7 @@ namespace io.agora.sdp
 
         protected string printIceOptions(IList<string> iceOptions)
         {
-            if (iceOptions == null)
+            if (iceOptions == null || iceOptions.Count == 0)
             {
                 return "";
             }
@@ -255,12 +261,11 @@ namespace io.agora.sdp
         protected string printExtmap(IList<Extmap> extmaps)
         {
             var maps = extmaps.Select((extmap) =>
-                  $"a = extmap:${ extmap.entry}" +
-                      extmap.direction == null ? "" : $"/{ extmap.direction}" +
+                  $"a = extmap:{ extmap.entry}" + 
+                      (extmap.direction == null ? "" : $"/{ extmap.direction}") +
                       Constants.SP + extmap.extensionName +
-                      extmap.extensionAttributes == null ? "" : Constants.SP + $"{ extmap.extensionAttributes}" +
-                     this.eol
-              );
+                      (extmap.extensionAttributes == null ? "" : Constants.SP + $"{ extmap.extensionAttributes}") + eol
+              ) ;
             return string.Join("", maps);
         }
 
@@ -270,7 +275,7 @@ namespace io.agora.sdp
             {
                 return "";
             }
-            return $"a = setup:{setup}${ this.eol}";
+            return $"a = setup:{setup}{ this.eol}";
         }
 
         protected string printUnrecognized(IList<Attribute> unrecognized)
@@ -380,8 +385,8 @@ namespace io.agora.sdp
             }
             else if (msidSemantic.identifierList.Count > 0)
             {
-                result += msidSemantic.identifierList.Select(
-                  (identifier) => $"{ Constants.SP}{ identifier}"
+                result += string.Join(" ", msidSemantic.identifierList.Select(
+                  (identifier) => $"{ Constants.SP}{ identifier}")
               );
             }
 
@@ -462,6 +467,17 @@ namespace io.agora.sdp
         private string printCandidates(IList<Candidate> candidates)
         {
             string result = "";
+            foreach(var can in candidates)
+            {
+                string ext = "";
+                foreach (var key in can.extension.Keys) {
+                    ext += key + " " + can.extension[key];
+		        }
+                result += $"a = candidate:{can.foundation} {can.componentId} {can.transport} {can.priority} " +
+                          $"{can.connectionAddress} {can.port} " + $"typ {can.type} " +
+                          (string.IsNullOrEmpty(can.relAddr) ? "" : $"{can.relAddr} ") +
+                          (string.IsNullOrEmpty(can.relPort) ? "" : $"{can.relPort} ")+ ext + eol;
+	        }
             //return candidates
             //  .map(
             //    (candidate) =>
@@ -490,7 +506,7 @@ namespace io.agora.sdp
         {
             var rl = remoteCandidatesList.Select(
                 (remoteCandidates) =>
-                  $"a = remote - candidates:{ string.Join(Constants.SP.ToString(), remoteCandidates) }{this.eol}"
+                  $"a = remote - candidates:{ string.Join(" ", remoteCandidates.ToString()) }{this.eol}"
               );
             return string.Join("", rl);
         }
@@ -502,6 +518,11 @@ namespace io.agora.sdp
 
             return "a=end-of-candidates" + this.eol;
         }
+
+        private string printXGoogleFlag(string flag)
+        {
+            return "a=x-google-flag:" + flag + eol;
+	    }
 
         private string printRTPRelated(MediaAttributes attributes) {
             if (attributes.payloads == null) {
@@ -552,7 +573,7 @@ namespace io.agora.sdp
             string keysString = string.Join(";", fparamkeys);
 
 
-            return $"a=fmtp:${payloadType}" + Constants.SP + keysString + this.eol;
+            return $"a=fmtp:{payloadType}" + Constants.SP + keysString + this.eol;
         }
 
         private string printRtpMap(int payloadType, RTPMap rtpMap) {
@@ -560,8 +581,10 @@ namespace io.agora.sdp
                 return "";
             }
 
-            return $"a=rtpmap:{payloadType}{Constants.SP}{rtpMap.encodingName}/{ rtpMap.clockRate }" +
-                rtpMap.encodingParameters == null ? "" : $"/{rtpMap.encodingParameters}" + this.eol;
+            var str = $"a=rtpmap:{payloadType}{Constants.SP}{rtpMap.encodingName}/{ rtpMap.clockRate }" +
+                (rtpMap.encodingParameters == 0 ? "" : $"/{rtpMap.encodingParameters}") + this.eol;
+
+            return str;
         }
 
         private string printRTCPFeedback(string payloadType, RTCPFeedback rtcpFeedback)
@@ -612,9 +635,8 @@ namespace io.agora.sdp
                         ssrc.attributes.Keys
                           .Select(
                             (attributeName) =>
-                              $"a=ssrc:${ssrc.ssrcId}{Constants.SP}{attributeName}" +
-                                ssrc.attributes[attributeName] == null
-                                  ? "" : $":{ssrc.attributes[attributeName]}"
+                              $"a=ssrc:{ssrc.ssrcId}{Constants.SP}{attributeName}" +
+                                (ssrc.attributes[attributeName] == null ? "" : $":{ssrc.attributes[attributeName]}")
                               + this.eol
                           ))
                       ));
@@ -644,7 +666,7 @@ namespace io.agora.sdp
             string result = $"a=rtcp:${rtcp.port}";
 
             if (rtcp.netType != null) {
-                result += $"$ {Constants.SP}{rtcp.netType}";
+                result += $"{Constants.SP}{rtcp.netType}";
             }
 
             if (rtcp.addressType != null) {
@@ -661,7 +683,7 @@ namespace io.agora.sdp
         private string printMSId(IList<MSID> msids) {
             string result = string.Join("", msids.Select(
                         (msid) =>
-                          $"a=msid:{msid.id}" + msid.appdata == null ? "" : $"{Constants.SP}${msid.appdata}" +
+                          $"a=msid:{msid.id}" + msid.appdata == null ? "" : $"{Constants.SP}{msid.appdata}" +
                             this.eol
                       ));
 

@@ -190,6 +190,17 @@ namespace io.agora.sdp
             return str.Substring(peek).StartsWith(end);
 	    }
 
+        protected void parseIceLite()
+        {
+            if (attributes.iceLite != null && attributes.iceLite != false)
+            {
+                throw new Exception(
+                  "Invalid ice-lite, should be only a single line of 'a=ice-lite'"
+                );
+            }
+            attributes.iceLite = true;
+        }
+
         protected void parseIceUfrag(Attribute attribute)
         {
             if (this.attributes.iceUfrag != null)
@@ -415,17 +426,6 @@ namespace io.agora.sdp
             }
 
             _attributes.groups.Add(new Group(semantic, identificationTag));
-        }
-
-        private void parseIceLite()
-        {
-            if (_attributes.iceLite != null && _attributes.iceLite != false)
-            {
-                throw new Exception(
-                  "Invalid ice-lite, should be only a single line of 'a=ice-lite'"
-                );
-            }
-            _attributes.iceLite = true;
         }
 
         private void parseTlsId(Attribute attribute)

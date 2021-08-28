@@ -74,6 +74,9 @@ namespace io.agora.sdp
                     case "setup":
                         this.parseSetup(attribute);
                         break;
+                    case "ice-lite":
+                        this.parseIceLite();
+                        break;
                     case "ice-ufrag":
                         this.parseIceUfrag(attribute);
                         break;
@@ -252,7 +255,6 @@ namespace io.agora.sdp
 
         private void parseRemoteCandidate(Attribute attribute)
         {
-            List<RemoteCandidate> remoteCandidates = new List<RemoteCandidate>();
 
             while (true)
             {
@@ -262,7 +264,7 @@ namespace io.agora.sdp
                 this.consumeAttributeSpace(attribute);
                 var port = this.extract(attribute, this.consumePort);
 
-                remoteCandidates.Add(new RemoteCandidate(componentId, connectionAddress, port));
+                _attributes.remoteCandidatesList.Add(new RemoteCandidate(componentId, connectionAddress, port));
 
                 try
                 {
@@ -272,10 +274,7 @@ namespace io.agora.sdp
                 {
                     break;
                 }
-                remoteCandidates.AddRange(_attributes.remoteCandidatesList);
             }
-
-            _attributes.remoteCandidatesList = remoteCandidates;
         }
 
         private void parseEndOfCandidates()

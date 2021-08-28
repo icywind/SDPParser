@@ -1,5 +1,5 @@
 ﻿//
-// TestParser.cs
+// TestPrinter.cs
 //
 // Author:
 //       Rick Cheng <rick@agora.io>
@@ -27,37 +27,33 @@ using Xunit;
 using System;
 using io.agora.sdp;
 using Newtonsoft.Json;
-
 namespace sdptests
 {
-    public class TestParser
+    public class TestPrinter : TestParser
     {
-        protected SessionDescription SessionDescriptionBuffer { get; set; }
 
-        protected void parseSDP(string sdp)
+        [Fact]
+        void PrintSDP1()
         {
-            Parser parser = new Parser();
-            SessionDescriptionBuffer = parser.Parse(sdp);
-            string json = JsonConvert.SerializeObject(SessionDescriptionBuffer);
-            Console.WriteLine("sessionDescription:\n" + json);
+            TestSDP1();
+            string sdp = Printer.Print(SessionDescriptionBuffer, "\n");
+            Console.WriteLine(sdp);
         }
 
         [Fact]
-        protected void TestSDP1()
+        void PrintSDP2()
         {
-            parseSDP(SampleSDP.SDP1);
-	    }
-
-        [Fact]
-        protected void TestSDP2()
-        {
-            parseSDP(SampleSDP.SDP2);
+            TestSDP2();
+            string sdp = Printer.Print(SessionDescriptionBuffer);
+            Console.WriteLine(sdp);
         }
 
         [Fact]
-        protected void TestSDP3()
+        void PrintSDP3()
         {
-            parseSDP(SampleSDP.SDP3);
+            TestSDP3();
+            string sdp = Printer.Print(SessionDescriptionBuffer);
+            Console.WriteLine(sdp);
         }
     }
 }

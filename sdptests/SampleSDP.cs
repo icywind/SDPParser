@@ -26,7 +26,7 @@
 using System;
 namespace sdptests
 {
-    public static class SampleSDP
+    public class SampleSDP
     {
         public const string SDP1 = @"
 v=0
