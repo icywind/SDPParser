@@ -59,48 +59,48 @@ namespace io.agora.sdp
             sdp += this.printSessionAttributes(sessionDescription.attributes as SessionAttributes);
             sdp += this.printMediaDescription(sessionDescription.mediaDescriptions);
 
-            return sdp;
+            return sdp.Trim();
         }
 
         private string printVersion(string version)
         {
-            return $"v ={version}{this.eol}";
+            return $"v={version}{this.eol}";
         }
 
         private string printOrigin(Origin origin)
         {
-            return $"o ={ origin.username} { origin.sessId} { origin.sessVersion} { origin.nettype} { origin.adrtype} { origin.unicastAddress}{ this.eol}";
+            return $"o={ origin.username} { origin.sessId} { origin.sessVersion} { origin.nettype} { origin.adrtype} { origin.unicastAddress}{ this.eol}";
         }
 
         private string printSessionName(string sessionName)
         {
-            return sessionName != null ? $"s ={ sessionName}{ this.eol}" : "";
+            return sessionName != null ? $"s={ sessionName}{ this.eol}" : "";
         }
 
         private string printInformation(string information)
         {
-            return information != null ? $"i ={ information}{ this.eol}" : "";
+            return information != null ? $"i={ information}{ this.eol}" : "";
         }
 
         private string printUri(string uri)
         {
-            return uri != null ? $"u ={ uri}{ this.eol}" : "";
+            return uri != null ? $"u={ uri}{ this.eol}" : "";
         }
 
         private string printEmail(IList<string> emails)
         {
-            string result = "";
+            string result= "";
             foreach (string email in emails) {
-                result += $"e ={ email}{ this.eol}";
+                result += $"e={ email}{ this.eol}";
             }
             return result;
         }
 
         private string printPhone(IList<string> phones)
         {
-            string result = "";
+            string result= "";
             foreach (string phone in phones) {
-                result += $"e ={ phone}{ this.eol}";
+                result += $"e={ phone}{ this.eol}";
             }
             return result;
         }
@@ -108,7 +108,7 @@ namespace io.agora.sdp
         private string printConnection(Connection connection)
         {
             return connection != null ?
-                $"c ={ connection.nettype} { connection.addrtype} { connection.address}{ this.eol}" :
+                $"c={ connection.nettype} { connection.addrtype} { connection.address}{ this.eol}" :
             "";
         }
 
@@ -116,26 +116,26 @@ namespace io.agora.sdp
         {
             string result = "";
             foreach (Bandwidth bandwidth in bandwidths) {
-                result += $"b ={ bandwidth.bwtype}:{ bandwidth.bandwidth}{ this.eol}";
+                result += $"b={ bandwidth.bwtype}:{ bandwidth.bandwidth}{ this.eol}";
             }
             return result;
         }
 
         private string printTimeFields(IList<TimeField> timeFields)
         {
-            string result = "";
+            string result= "";
             foreach (var timeField in timeFields) {
-                result += $"t ={ timeField.time.startTime} { timeField.time.stopTime}{ this.eol}";
+                result += $"t={ timeField.time.startTime} { timeField.time.stopTime}{ this.eol}";
 
                 foreach (var repeatField in timeField.repeats) {
-                    result += $"r ={ repeatField.repeatInterval } { string.Join(" ", repeatField.typedTimes)}{ this.eol}";
+                    result += $"r={ repeatField.repeatInterval } { string.Join(" ", repeatField.typedTimes)}{ this.eol}";
                 }
 
                 if (timeField.zoneAdjustments != null && timeField.zoneAdjustments.Count > 0)
                 {
                     string zvalue = string.Join(" ", timeField.zoneAdjustments.Select((zone) => "" + zone.time + (zone.back ? "-" : "") + zone.typedTime));
                     // result += $"z =";
-                    result += $"z ={zvalue} {this.eol}";
+                    result += $"z={zvalue} {this.eol}";
 
                     result += this.eol;
                 }
@@ -145,14 +145,14 @@ namespace io.agora.sdp
 
         private string printKey(string key)
         {
-            return key != null ? $"k ={ key}{ this.eol}" : "";
+            return key != null ? $"k={ key}{ this.eol}" : "";
         }
 
         private string printAttributes(List<Attribute> attributes)
         {
             string result = "";
             foreach (var attribute in attributes) {
-                result += $"a ={ attribute.attField}" + attribute.attValue != null ? attribute.attValue : "" + this.eol;
+                result += $"a={ attribute.attField}" + attribute.attValue != null ? attribute.attValue : "" + this.eol;
             }
             return result;
         }
@@ -217,7 +217,7 @@ namespace io.agora.sdp
             }
             else
             {
-                return $"a = ice - ufrag:{ iceUfrag}{ this.eol}";
+                return $"a=ice-ufrag:{ iceUfrag}{ this.eol}";
             }
         }
 
@@ -229,9 +229,23 @@ namespace io.agora.sdp
             }
             else
             {
-                return $"a = ice - pwd:${ icePwd}${ this.eol}";
+                return $"a=ice-pwd:${ icePwd}${ this.eol}";
             }
         }
+
+
+        protected string printIceLite(bool? iceLite)
+        {
+            if (iceLite == null)
+            {
+                return "";
+            }
+            else
+            {
+                return "a=ice-lite" + this.eol;
+            }
+        }
+
 
         protected string printIceOptions(IList<string> iceOptions)
         {
@@ -242,13 +256,13 @@ namespace io.agora.sdp
 
             string options = string.Join(Constants.SP.ToString(), iceOptions);
 
-            return $"a = ice - options:{options}{this.eol}";
+            return $"a=ice-options:{options}{this.eol}";
         }
 
         protected string printFingerprints(IList<FingerPrint> fingerprints)
         {
             var fing = fingerprints.Select((fingerprint) =>
-                       $"a = fingerprint:{ fingerprint.hashFunction}{Constants.SP}{ fingerprint.fingerprint}");
+                       $"a=fingerprint:{ fingerprint.hashFunction}{Constants.SP}{ fingerprint.fingerprint}");
 
             string prints = string.Join(this.eol, fing);
             if (fingerprints.Count > 0)
@@ -261,7 +275,7 @@ namespace io.agora.sdp
         protected string printExtmap(IList<Extmap> extmaps)
         {
             var maps = extmaps.Select((extmap) =>
-                  $"a = extmap:{ extmap.entry}" + 
+                  $"a=extmap:{ extmap.entry}" + 
                       (extmap.direction == null ? "" : $"/{ extmap.direction}") +
                       Constants.SP + extmap.extensionName +
                       (extmap.extensionAttributes == null ? "" : Constants.SP + $"{ extmap.extensionAttributes}") + eol
@@ -275,14 +289,14 @@ namespace io.agora.sdp
             {
                 return "";
             }
-            return $"a = setup:{setup}{ this.eol}";
+            return $"a=setup:{setup}{ this.eol}";
         }
 
         protected string printUnrecognized(IList<Attribute> unrecognized)
         {
             var maps = unrecognized.Select(
                 (attribute) =>
-                  $"a ={ attribute.attField}" +
+                  $"a={ attribute.attField}" +
                 attribute.attValue == null ? "" : $":{ attribute.attValue}" +
                 $"{ this.eol}"
             );
@@ -323,7 +337,7 @@ namespace io.agora.sdp
             {
                 var strs = groups.Select(
                     (group) =>
-                      $"a = group:{ group.semantic}" +
+                      $"a=group:{ group.semantic}" +
                      string.Join("", group.identificationTag.Select((item) => Constants.SP + item)) + // $"${ Constants.SP}${ item}")
                      this.eol
                 );
@@ -332,23 +346,11 @@ namespace io.agora.sdp
             return result;
         }
 
-        private string printIceLite(bool? iceLite)
-        {
-            if (iceLite == null)
-            {
-                return "";
-            }
-            else
-            {
-                return "a=ice-lite" + this.eol;
-            }
-        }
-
         private string printTlsId(string tlsId)
         {
             if (tlsId != null)
             {
-                return $"a = tls - id:{ tlsId}{ this.eol}";
+                return $"a=tls-id:{ tlsId}{ this.eol}";
             }
 
             return "";
@@ -362,7 +364,7 @@ namespace io.agora.sdp
             }
 
             var ids = identities.Select((identity) =>
-                   $"a = identity:{ identity.assertionValue }" +
+                   $"a=identity:{ identity.assertionValue }" +
                    identity.extensions.Select((extension) =>
                       Constants.SP + extension.name + (
                           extension.value == null ? "" : $"={ extension.value}")
@@ -378,7 +380,7 @@ namespace io.agora.sdp
                 return "";
             }
 
-            string result = $"a = msid - semantic:{ msidSemantic.semantic}";
+            string result = $"a=msid-semantic:{ msidSemantic.semantic}";
             if (msidSemantic.applyForAll != null && msidSemantic.applyForAll == true)
             {
                 result += $"{Constants.SP} *";
@@ -409,6 +411,8 @@ namespace io.agora.sdp
 
             lines += this.printIcePwd(attributes.icePwd);
 
+            lines += this.printIceLite(attributes.iceLite);
+
             lines += this.printIceOptions(attributes.iceOptions);
 
             lines += this.printCandidates(attributes.candidates);
@@ -416,6 +420,8 @@ namespace io.agora.sdp
             lines += this.printRemoteCandidatesList(attributes.remoteCandidatesList);
 
             lines += this.printEndOfCandidates(attributes.endOfCandidates);
+
+            lines += this.printXGoogleFlag(attributes.xGoogleFlag);
 
             lines += this.printFingerprints(attributes.fingerprints);
 
@@ -473,7 +479,7 @@ namespace io.agora.sdp
                 foreach (var key in can.extension.Keys) {
                     ext += key + " " + can.extension[key];
 		        }
-                result += $"a = candidate:{can.foundation} {can.componentId} {can.transport} {can.priority} " +
+                result += $"a=candidate:{can.foundation} {can.componentId} {can.transport} {can.priority} " +
                           $"{can.connectionAddress} {can.port} " + $"typ {can.type} " +
                           (string.IsNullOrEmpty(can.relAddr) ? "" : $"{can.relAddr} ") +
                           (string.IsNullOrEmpty(can.relPort) ? "" : $"{can.relPort} ")+ ext + eol;
@@ -506,7 +512,7 @@ namespace io.agora.sdp
         {
             var rl = remoteCandidatesList.Select(
                 (remoteCandidates) =>
-                  $"a = remote - candidates:{ string.Join(" ", remoteCandidates.ToString()) }{this.eol}"
+                  $"a=remote-candidates:{ string.Join(" ", remoteCandidates.ToString()) }{this.eol}"
               );
             return string.Join("", rl);
         }
