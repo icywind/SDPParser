@@ -563,7 +563,7 @@ namespace io.agora.sdp
         }
 
         private string printFmtp(int payloadType, Fmtp fmtp) {
-            if (fmtp == null) {
+            if (fmtp == null || fmtp.parameters.Count == 0) {
                 return "";
             }
 
