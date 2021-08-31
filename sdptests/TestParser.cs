@@ -32,32 +32,33 @@ namespace sdptests
 {
     public class TestParser
     {
-        protected SessionDescription SessionDescriptionBuffer { get; set; }
+        public SessionDescription SessionDescriptionBuffer { get; protected set; }
 
-        protected void parseSDP(string sdp)
+        public string ParseSDP(string sdp)
         {
             Parser parser = new Parser();
             SessionDescriptionBuffer = parser.Parse(sdp);
             string json = JsonConvert.SerializeObject(SessionDescriptionBuffer);
             Console.WriteLine("sessionDescription:\n" + json);
+            return json;
         }
 
         [Fact]
         protected void TestSDP1()
         {
-            parseSDP(SampleSDP.SDP1);
+            ParseSDP(SampleSDP.SDP1);
 	    }
 
         [Fact]
         protected void TestSDP2()
         {
-            parseSDP(SampleSDP.SDP2);
+            ParseSDP(SampleSDP.SDP2);
         }
 
         [Fact]
         protected void TestSDP3()
         {
-            parseSDP(SampleSDP.SDP3);
+            ParseSDP(SampleSDP.SDP3);
         }
     }
 }

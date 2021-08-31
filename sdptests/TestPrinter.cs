@@ -29,31 +29,33 @@ using io.agora.sdp;
 using Newtonsoft.Json;
 namespace sdptests
 {
-    public class TestPrinter : TestParser
+    public class TestPrinter
     {
+        TestParser testParser = new TestParser();
 
         [Fact]
         void PrintSDP1()
         {
-            TestSDP1();
-            string sdp = Printer.Print(SessionDescriptionBuffer, "\n");
+            testParser.ParseSDP(SampleSDP.SDP1);
+            string sdp = Printer.Print(testParser.SessionDescriptionBuffer, "\n");
             Console.WriteLine(sdp);
         }
 
         [Fact]
         void PrintSDP2()
         {
-            TestSDP2();
-            string sdp = Printer.Print(SessionDescriptionBuffer);
+            testParser.ParseSDP(SampleSDP.SDP2);
+            string sdp = Printer.Print(testParser.SessionDescriptionBuffer);
             Console.WriteLine(sdp);
         }
 
         [Fact]
         void PrintSDP3()
         {
-            TestSDP3();
-            string sdp = Printer.Print(SessionDescriptionBuffer);
+            testParser.ParseSDP(SampleSDP.SDP3);
+            string sdp = Printer.Print(testParser.SessionDescriptionBuffer);
             Console.WriteLine(sdp);
         }
+
     }
 }
