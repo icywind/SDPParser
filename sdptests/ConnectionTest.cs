@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 using Xunit;
 using System;
-using System.Collections.Generic;
 using io.agora.sdp;
 using Newtonsoft.Json;
 

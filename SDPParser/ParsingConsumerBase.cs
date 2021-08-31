@@ -58,7 +58,7 @@ namespace io.agora.sdp
 
             if (peek - cur == 0)
             {
-                throw new Exception($"Invalid text, at {str}");
+                throw new SDPParseException($"Invalid text, at {str}");
             }
             return peek;
         }
@@ -146,6 +146,7 @@ namespace io.agora.sdp
 
             while (peek < str.Length)
             {
+                char c = str[peek];
                 if (predict(str[peek]))
                 {
                     peek++;
@@ -158,7 +159,7 @@ namespace io.agora.sdp
 
             if (peek - cur == 0)
             {
-                throw new Exception($"Invalid rule at {cur}.");
+                throw new SDPParseException($"Invalid rule at {cur}.");
             }
 
             return peek;
@@ -172,7 +173,7 @@ namespace io.agora.sdp
             }
             else
             {
-                throw new Exception($"Invalid space at {cur}.");
+                throw new SDPParseException($"Invalid space at {cur}.");
             }
         }
 
@@ -191,7 +192,7 @@ namespace io.agora.sdp
                     }
                     else
                     {
-                        throw new Exception("Invalid IP4 address.");
+                        throw new SDPParseException("Invalid IP4 address.");
                     }
                 }
             }
@@ -212,7 +213,7 @@ namespace io.agora.sdp
 
             if (peek - cur == 0)
             {
-                throw new Exception("Invalid decimal uchar.");
+                throw new SDPParseException("Invalid decimal uchar.");
             }
 
             string slice = str.Substring(cur, peek - cur);
@@ -224,7 +225,7 @@ namespace io.agora.sdp
             }
             else
             {
-                throw new Exception("Invalid decimal uchar");
+                throw new SDPParseException("Invalid decimal uchar");
             }
         }
 
@@ -321,7 +322,7 @@ namespace io.agora.sdp
                 {
                     if (i == 0)
                     {
-                        throw new Exception("Invalid hex 4");
+                        throw new SDPParseException("Invalid hex 4");
                     }
                     break;
                 }
@@ -354,7 +355,7 @@ namespace io.agora.sdp
 
             if (peek - cur < 4)
             {
-                throw new Exception("Invalid FQDN");
+                throw new SDPParseException("Invalid FQDN");
             }
 
             return peek;
@@ -427,7 +428,7 @@ namespace io.agora.sdp
 
             if (pre_number < 224 || pre_number > 239)
             {
-                throw new Exception(
+                throw new SDPParseException(
                   "Invalid IP4 multicast address, IPv4 multicast addresses may be in the range 224.0.0.0 to 239.255.255.255."
                 );
             }
@@ -436,7 +437,7 @@ namespace io.agora.sdp
             {
                 if (str[peek] != '.')
                 {
-                    throw new Exception("Invalid IP4 multicast address.");
+                    throw new SDPParseException("Invalid IP4 multicast address.");
                 }
                 else
                 {
@@ -471,7 +472,7 @@ namespace io.agora.sdp
         {
             if (!IsPosDigit(str[peek]))
             {
-                throw new Exception("Invalid integer.");
+                throw new SDPParseException("Invalid integer.");
             }
             else
             {
@@ -503,7 +504,7 @@ namespace io.agora.sdp
 
             if (!IsPosDigit(str[peek]))
             {
-                throw new Exception("Invalid TTL.");
+                throw new SDPParseException("Invalid TTL.");
             }
             else
             {
@@ -572,7 +573,7 @@ namespace io.agora.sdp
 
             if (peek - cur < 10)
             {
-                throw new Exception("Invalid time");
+                throw new SDPParseException("Invalid time");
             }
 
             return peek;
@@ -604,7 +605,7 @@ namespace io.agora.sdp
             // }
             //
             // if (result == undefined) {
-            //   throw new Exception("Invalid ICE address");
+            //   throw new SDPParseException("Invalid ICE address");
             // }
             //
             // return result;
@@ -671,7 +672,7 @@ namespace io.agora.sdp
         {
             if (!IsPosDigit(recordValue[cur]))
             {
-                throw new Exception("Invalid repeat interval");
+                throw new SDPParseException("Invalid repeat interval");
             }
             cur += 1;
 
@@ -704,12 +705,12 @@ namespace io.agora.sdp
             {
                 if (cur + i >= value.Length)
                 {
-                    throw new Exception("consume exceeding value Length");
+                    throw new SDPParseException("consume exceeding value Length");
                 }
 
                 if (value[cur + i] != predicate[i])
                 {
-                    throw new Exception($"consume { predicate } failed at {i}");
+                    throw new SDPParseException($"consume { predicate } failed at {i}");
                 }
             }
 
@@ -720,4 +721,9 @@ namespace io.agora.sdp
         /// ======================== End of Class  ============================
     }
 
+    public class SDPParseException : System.Exception
+    { 
+        public SDPParseException(string error) : base(error)
+        { }
+    }
 }

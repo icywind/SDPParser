@@ -294,11 +294,15 @@ namespace io.agora.sdp
 
         protected string printUnrecognized(IList<Attribute> unrecognized)
         {
+            if (unrecognized == null || unrecognized.Count == 0)
+            {
+                return "";
+	        }
+
             var maps = unrecognized.Select(
                 (attribute) =>
                   $"a={ attribute.attField}" +
-                attribute.attValue == null ? "" : $":{ attribute.attValue}" +
-                $"{ this.eol}"
+                (attribute.attValue == null ? "" : $":{ attribute.attValue}" + this.eol)
             );
             return string.Join("", maps);
         }
@@ -383,7 +387,7 @@ namespace io.agora.sdp
             string result = $"a=msid-semantic:{ msidSemantic.semantic}";
             if (msidSemantic.applyForAll != null && msidSemantic.applyForAll == true)
             {
-                result += $"{Constants.SP} *";
+                result += $"{Constants.SP}*";
             }
             else if (msidSemantic.identifierList.Count > 0)
             {
@@ -404,6 +408,7 @@ namespace io.agora.sdp
         public string print(MediaDescription mediaDescription) {
             var attributes = mediaDescription.attributes;
             string lines = "";
+            string ss;
 
             lines += this.printRTCP(attributes.rtcp);
 
@@ -426,6 +431,8 @@ namespace io.agora.sdp
             lines += this.printFingerprints(attributes.fingerprints);
 
             lines += this.printSetup(attributes.setup);
+
+            lines += this.printConnection(attributes.connection);
 
             lines += this.printMid(attributes.mid);
 
@@ -455,20 +462,28 @@ namespace io.agora.sdp
 
             lines += this.printMSId(attributes.msids);
 
-            lines += this.printImageattr(attributes.imageattr);
+            lines += (ss= this.printImageattr(attributes.imageattr));
 
-            lines += this.printRid(attributes.rids);
+            lines += (ss= this.printRid(attributes.rids));
 
-            lines += this.printSimulcast(attributes.simulcast);
+            lines += (ss= this.printSimulcast(attributes.simulcast));
 
-            lines += this.printSCRPPort(attributes.sctpPort);
+            lines += (ss= this.printSCRPPort(attributes.sctpPort));
 
-            lines += this.printMaxMessageSize(attributes.maxMessageSize);
+            lines += (ss= this.printMaxMessageSize(attributes.maxMessageSize));
 
-            lines += this.printUnrecognized(attributes.unrecognized);
+            lines += (ss= this.printUnrecognized(attributes.unrecognized));
 
             return lines;
         }
+
+        private string printConnection(string connValue)
+        { 
+            if (string.IsNullOrEmpty(connValue)) {
+                return "";
+	        }
+            return $"a=connection:{connValue}" + eol; 	
+	    }
 
         private string printCandidates(IList<Candidate> candidates)
         {
@@ -708,14 +723,14 @@ namespace io.agora.sdp
             {
                 string result = $"a=rid:{rid.id}{Constants.SP}{rid.direction}";
 
-                if (rid.payloads != null)
+                if (rid.payloads != null && rid.payloads.Count > 0)
                 {
-                    result += $"{Constants.SP}pt=" + string.Join(",", rid.payloads);
+                    result += $"{Constants.SP}pt=" + string.Join(",", rid.payloads) + ";";
                 }
 
                 if (rid.@params.Count > 0)
                 {
-                    var paramstr = string.Join(":", rid.@params
+                    var paramstr = string.Join(";", rid.@params
                     .Select((param) =>
                     {
                         if (param.type == "depend")
@@ -728,7 +743,7 @@ namespace io.agora.sdp
                         }
                     }));
 
-                    result += $"{Constants.SP}" + paramstr;
+                    result += paramstr;
                 }
 
                 return result + this.eol;

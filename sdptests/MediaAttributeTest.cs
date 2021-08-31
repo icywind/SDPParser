@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using io.agora.sdp;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace sdptests
 {
@@ -106,15 +107,40 @@ namespace sdptests
         }
 
         // Attribute inside Media
-        [Fact]
-        public void ParseRid()
+        const string rid1 = "1 send pt = 97 max - width = 1280; max - height = 720";
+        const string rid2 = "q send pt=120,121;max-width=1280;max-height=720;max-fps=15";
+
+        const string expect1 = "{\"mid\":null,\"iceUfrag\":null,\"icePwd\":null,\"iceLite\":null,\"iceOptions\":[],\"candidates\":[],\"remoteCandidatesList\":[],\"endOfCandidates\":null,\"fingerprints\":[],\"ptime\":null,\"maxPtime\":null,\"direction\":null,\"ssrcs\":[],\"extmaps\":[],\"rtcpMux\":null,\"rtcpMuxOnly\":null,\"rtcpRsize\":null,\"rtcp\":null,\"msids\":[],\"imageattr\":[],\"rids\":[{\"id\":\"1\",\"direction\":\"send\",\"payloads\":[\"97\"],\"params\":[{\"type\":\"max-width\",\"val\":\"1280\"},{\"type\":\"max-height\",\"val\":\"720\"}]}],\"simulcast\":null,\"sctpPort\":null,\"maxMessageSize\":null,\"unrecognized\":[],\"setup\":null,\"payloads\":[],\"rtcpFeedbackWildcards\":[],\"ssrcGroups\":[],\"xGoogleFlag\":null,\"connection\":null}";
+        const string expect2 = "{\"mid\":null,\"iceUfrag\":null,\"icePwd\":null,\"iceLite\":null,\"iceOptions\":[],\"candidates\":[],\"remoteCandidatesList\":[],\"endOfCandidates\":null,\"fingerprints\":[],\"ptime\":null,\"maxPtime\":null,\"direction\":null,\"ssrcs\":[],\"extmaps\":[],\"rtcpMux\":null,\"rtcpMuxOnly\":null,\"rtcpRsize\":null,\"rtcp\":null,\"msids\":[],\"imageattr\":[],\"rids\":[{\"id\":\"q\",\"direction\":\"send\",\"payloads\":[\"120\",\"121\"],\"params\":[{\"type\":\"max-width\",\"val\":\"1280\"},{\"type\":\"max-height\",\"val\":\"720\"},{\"type\":\"max-fps\",\"val\":\"15\"}]}],\"simulcast\":null,\"sctpPort\":null,\"maxMessageSize\":null,\"unrecognized\":[],\"setup\":null,\"payloads\":[],\"rtcpFeedbackWildcards\":[],\"ssrcGroups\":[],\"xGoogleFlag\":null,\"connection\":null}";
+        string _parseRid(string ridValue)
         {
             var parser = new MediaAttributeParser();
             io.agora.sdp.Attribute attribute = new io.agora.sdp.Attribute(
-                 "rid", 0, "1 send pt = 97 max - width = 1280; max - height = 720"
+                 "rid", 0, ridValue
                 ); 
 	
             parser.ParseRid(attribute);
+            return JsonConvert.SerializeObject(parser.Attributes);
 	    }
+
+        [Fact]
+        void ParseRid1()
+        {
+            string result = _parseRid(rid1);
+            Console.WriteLine(result);
+            var e1 = JToken.Parse(expect1);
+            var r1 = JToken.Parse(result);
+            Assert.True(JToken.DeepEquals(r1, e1));
+	    }
+
+        [Fact]
+        void ParseRid2()
+        {
+            string result = _parseRid(rid2);
+            Console.WriteLine(result);
+            var e2 = JToken.Parse(expect2);
+            var r2 = JToken.Parse(result);
+            Assert.True(JToken.DeepEquals(r2, e2));
+        }
     }
 }

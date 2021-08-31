@@ -67,13 +67,13 @@ namespace io.agora.sdp
                 // var[min, max] = range || [];
                 if (range.min != null && result.Length < range.min)
                 {
-                    throw new Exception($"error in length, should be more or equal than { range.min} characters.");
+                    throw new SDPAttributeParseException($"error in result length, should be more or equal than { range.min} characters.");
                 }
 
                 if (range.max != null && result.Length > range.max)
                 {
-                    throw new Exception(
-                      $"error in length, should be less or equal than {range.max} characters."
+                    throw new SDPAttributeParseException(
+                      $"error in result length, should be less or equal than {range.max} characters."
                     );
                 }
             }
@@ -93,7 +93,7 @@ namespace io.agora.sdp
 
             if (!zeroOrMore && start == attribute._cur)
             {
-                throw new Exception($"Invalid space at {attribute._cur }.");
+                throw new SDPAttributeParseException($"Invalid space at {attribute._cur }.");
             }
         }
 
@@ -101,7 +101,7 @@ namespace io.agora.sdp
         {
             if (attribute.attValue == null)
             {
-                throw new Exception("Nothing to extract from attValue.");
+                throw new SDPAttributeParseException("Nothing to extract from attValue.");
             }
 
             var peek = consume(attribute.attValue, attribute._cur, rest);
@@ -114,7 +114,7 @@ namespace io.agora.sdp
         {
             if (null == attribute.attValue)
             {
-                throw new Exception();
+                throw new SDPAttributeParseException();
             }
 
             return attribute._cur >= attribute.attValue.Length;
@@ -124,21 +124,21 @@ namespace io.agora.sdp
         {
             if (null == attribute.attValue)
             {
-                throw new Exception();
+                throw new SDPAttributeParseException();
             }
             if (attribute._cur < attribute.attValue.Length)
             {
                 return attribute.attValue[attribute._cur];
             } else {
                 return Constants.NUL; // avoid index overflow
-	        }
+            }
         }
 
         protected bool peek(Attribute attribute, string value)
         {
             if (null == attribute.attValue)
             {
-                throw new Exception();
+                throw new SDPAttributeParseException();
             }
 
             for (int i = 0; i < value.Length; i++)
@@ -149,10 +149,10 @@ namespace io.agora.sdp
                     {
                         return false;
                     }
-                } catch { 
+                } catch {
                     // avoid index out of bound
-		            break; 
-		        }
+                    break;
+                }
             }
 
             return true;
@@ -170,13 +170,13 @@ namespace io.agora.sdp
         {
             if (null == attribute.attValue)
             {
-                throw new Exception();
+                throw new SDPAttributeParseException();
             }
 
             // check start
             var str = attribute.attValue.Substring(attribute._cur);
 
-            if ( str.Length <= (start.Length + end.Length) || !str.StartsWith(start)) { return false; }
+            if (str.Length <= (start.Length + end.Length) || !str.StartsWith(start)) { return false; }
 
             int peek = start.Length;
 
@@ -188,13 +188,13 @@ namespace io.agora.sdp
 
             // match end
             return str.Substring(peek).StartsWith(end);
-	    }
+        }
 
         protected void parseIceLite()
         {
             if (attributes.iceLite != null && attributes.iceLite != false)
             {
-                throw new Exception(
+                throw new SDPAttributeParseException(
                   "Invalid ice-lite, should be only a single line of 'a=ice-lite'"
                 );
             }
@@ -205,7 +205,7 @@ namespace io.agora.sdp
         {
             if (this.attributes.iceUfrag != null)
             {
-                throw new Exception(
+                throw new SDPAttributeParseException(
                   "Invalid ice-ufrag, should be only a single line if 'a=ice-ufrag'"
                 );
             }
@@ -217,7 +217,7 @@ namespace io.agora.sdp
         {
             if (this.attributes.icePwd != null)
             {
-                throw new Exception(
+                throw new SDPAttributeParseException(
                   "Invalid ice-pwd, should be only a single line if 'a=ice-pwd'"
                 );
             }
@@ -229,7 +229,7 @@ namespace io.agora.sdp
         {
             if (this.attributes.iceOptions.Count > 0)
             {
-                throw new Exception(
+                throw new SDPAttributeParseException(
                   "Invalid ice-options, should be only one 'ice-options' line"
                 );
             }
@@ -309,7 +309,7 @@ namespace io.agora.sdp
         {
             if (this.attributes.setup != null)
             {
-                throw new Exception("must only be one single 'a=setup' line.");
+                throw new SDPAttributeParseException("must only be one single 'a=setup' line.");
             }
 
             var role = this.extract(attribute, this.consumeTill);
@@ -320,7 +320,7 @@ namespace io.agora.sdp
               role != "holdconn"
             )
             {
-                throw new Exception(
+                throw new SDPAttributeParseException(
                   "role must be one of 'active', 'passive', 'actpass', 'holdconn'."
                 );
             }
@@ -335,11 +335,11 @@ namespace io.agora.sdp
     public class SessionAttributeParser : AttributeParser
     {
         SessionAttributes _attributes;
-        protected override IAttributes attributes 
-	    { 
-	        get { return _attributes; } 
-	        set { _attributes = (SessionAttributes)value; } 
-	    }//  SessionAttributes | MediaAttributes;
+        protected override IAttributes attributes
+        {
+            get { return _attributes; }
+            set { _attributes = (SessionAttributes)value; }
+        }//  SessionAttributes | MediaAttributes;
 
         public SessionAttributeParser()
         {
@@ -350,7 +350,7 @@ namespace io.agora.sdp
         {
             if (this.digested)
             {
-                throw new Exception("already digested");
+                throw new SDPAttributeParseException("already digested");
             }
 
             try
@@ -404,7 +404,7 @@ namespace io.agora.sdp
 
             if ((attribute.ignored == null || attribute.ignored == false) && attribute.attValue != null && !this.atEnd(attribute))
             {
-                throw new Exception("attribute parsing error");
+                throw new SDPAttributeParseException("attribute parsing error");
             }
         }
 
@@ -432,7 +432,7 @@ namespace io.agora.sdp
         {
             if (this._attributes.tlsId != null)
             {
-                throw new Exception("must be only one tld-id line");
+                throw new SDPAttributeParseException("must be only one tld-id line");
             }
 
             _attributes.tlsId = this.extractOneOrMore(attribute, IsTLSIdChar);
@@ -450,12 +450,12 @@ namespace io.agora.sdp
                 this.extract(attribute, this.consume, "=");
                 var value = this.extractOneOrMore(
                   attribute,
-                  (character) =>  character != Constants.SP && IsByteString(character) 
+                  (character) => character != Constants.SP && IsByteString(character)
               );
-                extensions.Add( new Extension( name, value ));
+                extensions.Add(new Extension(name, value));
             }
 
-            this._attributes.identities.Add(new Identity( assertionValue, extensions ));
+            this._attributes.identities.Add(new Identity(assertionValue, extensions));
         }
 
         private void parseMsidSemantic(Attribute attribute)
@@ -467,7 +467,7 @@ namespace io.agora.sdp
             }
 
             var semantic = this.extract(attribute, this.consumeToken);
-            MsidSemantic msidSemantic = new MsidSemantic( semantic, new List<string>());
+            MsidSemantic msidSemantic = new MsidSemantic(semantic, new List<string>());
 
             while (true)
             {
@@ -475,7 +475,7 @@ namespace io.agora.sdp
                 {
                     this.consumeAttributeSpace(attribute);
                 }
-                catch 
+                catch
                 {
                     break;
                 }
@@ -493,9 +493,13 @@ namespace io.agora.sdp
                 }
             }
 
-            ((SessionAttributes) attributes).msidSemantic = msidSemantic;
+            ((SessionAttributes)attributes).msidSemantic = msidSemantic;
         }
     }
 
     #endregion
+    public class SDPAttributeParseException : System.Exception{
+        public SDPAttributeParseException() : base() { }
+        public SDPAttributeParseException(string error) : base(error) { }
+    }
 }

@@ -164,6 +164,9 @@ namespace io.agora.sdp
                     case "x-google-flag":
                         this.parseXGoogleFlag(attribute);
                         break;
+                    case "connection":
+                        this.parseMediaConnection(attribute);
+                        break;
                     default:
                         attribute.ignored = true;
                         _attributes.unrecognized.Add(attribute);
@@ -300,7 +303,7 @@ namespace io.agora.sdp
 
             if (!this.atEnd(attribute) && this.peekChar(attribute) == '/')
             {
-                this.extract(attribute, this.consume, '/');
+                this.extract(attribute, this.consume, "/");
                 rtpMap.encodingParameters = int.Parse(
                   this.extract(attribute, this.consumeTill)
                 );
@@ -318,11 +321,11 @@ namespace io.agora.sdp
             }
 
             int payload_type = int.Parse(payloadType);
-            if (!foundPayload) { }
-            _attributes.payloads.Add(new PayloadAttribute(
-            rtpMap,
-            payload_type
-          ));
+            if (!foundPayload)
+            {
+                _attributes.payloads.Add(new PayloadAttribute( 
+		            rtpMap, payload_type ));
+            }
         }
 
         private void parsePtime(Attribute attribute)
@@ -403,12 +406,19 @@ namespace io.agora.sdp
             foreach (string keyValue in keyValues)
             {
                 string[] vals = keyValue.Split(new char[] { '=' });
-                string key = vals[0].Trim();
-                string value = vals[1].Trim();
-
-                if (key.Length > 0)
+                if (vals.Length > 0)
                 {
-                    parameters[key] = value;
+                    string key = vals[0].Trim();
+                    string value = null;
+
+                    if (vals.Length > 1) { 
+			            value = vals[1].Trim(); 
+		            }
+
+                    if (key.Length > 0)
+                    {
+                        parameters[key] = value;
+                    }
                 }
             };
 
@@ -663,6 +673,9 @@ namespace io.agora.sdp
 
                 // RID Params section,  [(key):(value)]*;
                 attribute.PackValue();  // remove spaces
+                int peek2 = this.consumeZeroOrMore(attribute.attValue, attribute._cur, (c) => c == ';');
+                attribute._cur = peek2;
+
                 while (true)
                 {
                     var type = this.extract(attribute, this.consumeToken);
@@ -772,6 +785,11 @@ namespace io.agora.sdp
         {
             _attributes.xGoogleFlag = this.extract(attribute, this.consumeToken);
         }
+
+        private void parseMediaConnection(Attribute attribute)
+        {
+            _attributes.connection = attribute.attValue;
+	    }
     }
 
 

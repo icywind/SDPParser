@@ -451,6 +451,7 @@ namespace io.agora.sdp
         public IList<RTCPFeedback> rtcpFeedbackWildcards { get; set; }
         public IList<SSRCGroup> ssrcGroups { get; set; }
         public string xGoogleFlag { get; set; }
+        public string connection { get; set; }
 
         public MediaAttributes()
         {
