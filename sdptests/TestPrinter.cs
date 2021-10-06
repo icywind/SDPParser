@@ -90,5 +90,13 @@ namespace sdptests
             string sdp = Printer.Print(testParser.SessionDescriptionBuffer);
             Console.WriteLine(sdp);
         }
+
+        [Fact]
+        void PrintSDP8()
+        {
+            testParser.ParseSDP(SampleSDP.SDP8);
+            string sdp = Printer.Print(testParser.SessionDescriptionBuffer);
+            Console.WriteLine(sdp);
+        }
     }
 }

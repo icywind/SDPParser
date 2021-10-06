@@ -213,7 +213,7 @@ namespace io.agora.sdp
                 );
                 var attribute = new Attribute(attField, 0);
 
-                if (record.value[record.cur] == ':')
+                if (record.cur < record.value.Length && record.value[record.cur] == ':')
                 {
                     record.cur += 1;
                     attribute.attValue = this.extractOneOrMore(record, IsByteString);

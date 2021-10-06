@@ -725,5 +725,30 @@ a=ssrc:3 label:video_track_id_1
         //    string sdp7_crypto1 = "a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:d0RmdmcmVCspeEc3QGZiNWpVLFJhQX1cfHAwJSoj|2^20|1:32";
         //    string sdp7_crypto2 = "a=crypto:1 AES_CM_128_HMAC_SHA1_32 inline:NzB4d1BINUAvLEw6UzF3WSJ+PSdFcGdUJShpX1Zj|2^20|1:32 dummy_session_params";
         // ==> TODO: implement crypto:   a=crypto:<tag> <cryto-suite> <key-params> [<session-params>]
+
+        public const string SDP8 = @"
+v=0
+o=- 0 0 IN IP4 127.0.0.1
+s=AgoraGateway
+t=0 0
+a=group:BUNDLE 0 1
+a=msid-semantic: WMS
+a=ice-lite
+m=video 9 UDP/TLS/RTP/SAVPF 0
+c=IN IP4 127.0.0.1
+a=rtcp:9 IN IP4 0.0.0.0
+a=sendonly
+a=rtcp-mux
+a=rtcp-rsize
+a=mid:0
+m=audio 9 UDP/TLS/RTP/SAVPF 0
+c=IN IP4 127.0.0.1
+a=rtcp:9 IN IP4 0.0.0.0
+a=sendonly
+a=rtcp-mux
+a=rtcp-rsize
+a=mid:1
+";
+
     }
 }

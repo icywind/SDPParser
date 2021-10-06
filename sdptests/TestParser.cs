@@ -60,5 +60,11 @@ namespace sdptests
         {
             ParseSDP(SampleSDP.SDP3);
         }
+
+        [Fact]
+        protected void TestSDP8()
+        {
+            ParseSDP(SampleSDP.SDP8);
+        }
     }
 }
